@@ -26,16 +26,18 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() {
+    println!("Cargando variables de ambiente y configuración...");
     dotenv::dotenv().ok();
-
     let config = Config::init();
 
+    println!("Conectando con la base de datos...");
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(&config.database_url)
         .await
         .expect("Error conectando con la base de datos");
 
+    println!("Construyendo aplicación...");
     let mut cors = CorsLayer::new()
         .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
         .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
@@ -65,7 +67,7 @@ async fn main() {
     }))
     .layer(cors);
 
-    println!("Server iniciado.");
+    println!("Server iniciado, escuchando en 0.0.0.0:3000");
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     match axum::serve(listener, app).await {
