@@ -273,15 +273,14 @@ pub async fn register_collaborator(
                 (StatusCode::INTERNAL_SERVER_ERROR, Json(error_response))
             })?;
 
-    if let Some(exists) = user_exists {
-        if exists {
+    if let Some(exists) = user_exists
+        && exists {
             let error_response = serde_json::json!({
                 "status": "fail",
                 "message": "Ese email ya se encuentra en uso",
             });
             return Err((StatusCode::CONFLICT, Json(error_response)));
         }
-    }
 
     let password = generate_hash(Uuid::new_v4()); // Contraseña random para evitar problemas de base de datos.
     let generation_token = base62::encode(Uuid::new_v4().as_u128());

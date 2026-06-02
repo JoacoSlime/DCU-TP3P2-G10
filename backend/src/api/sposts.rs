@@ -43,15 +43,14 @@ pub async fn add_spot(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(error_response))
     })?;
 
-    if let Some(exists) = spot_exists {
-        if exists {
+    if let Some(exists) = spot_exists
+        && exists {
             let error_response = serde_json::json!({
                 "status": "fail",
                 "message": "Ya existe un punto con ese título",
             });
             return Err((StatusCode::CONFLICT, Json(error_response)));
         }
-    }
 
     let title = sanitize_input(&body.title);
     let spot = sqlx::query_as!(
