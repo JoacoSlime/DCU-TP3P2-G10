@@ -10,14 +10,6 @@ RUN apt-get update \
     ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-# Cache de dependencias: ahora Cargo.toml/lock están en el mismo dir (backend/)
-COPY Cargo.toml Cargo.lock ./
-RUN mkdir -p src \
-  && printf "fn main() {}\n" > src/main.rs \
-  && cargo build --release \
-  && rm -rf src
-
-# Copiamos el código real del backend (todo el directorio backend/)
 COPY . .
 
 RUN cargo build --release --locked
