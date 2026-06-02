@@ -23,7 +23,7 @@ use crate::{
 pub fn create_router(app_state: Arc<AppState>) -> Router {
     Router::new()
         // Unauthenticated routes
-        .route("/api/healthchecker", get(health_checker))
+        .route("/api/healthcheck", get(health_checker))
         .route("/api/auth/me", get(me))
         .route("/api/auth/login", post(login))
         .route("/api/collaborators/create_password", post(create_password))

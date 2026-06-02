@@ -26,6 +26,8 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() {
+    dotenv::dotenv().ok();
+
     let config = Config::init();
 
     let pool = PgPoolOptions::new()
