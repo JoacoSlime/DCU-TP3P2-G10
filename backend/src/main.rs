@@ -11,12 +11,17 @@ use axum::http::{
     HeaderValue, Method,
     header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
 };
+use password_auth::generate_hash;
 use resend_rs::Resend;
 use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 use tower_http::cors::CorsLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use crate::{config::Config, route::create_router};
+use crate::{
+    config::Config,
+    route::create_router,
+    utils::{add_admin, has_admin_user},
+};
 
 pub struct AppState {
     db: Pool<Postgres>,
@@ -36,6 +41,27 @@ async fn main() {
         .connect(&config.database_url)
         .await
         .expect("Error conectando con la base de datos");
+
+    // Esto habría que moverlo... pero-
+    let admin_exists = has_admin_user(&pool)
+        .await
+        .expect("Error al conectar a la base de datos");
+    if !admin_exists {
+        let user_id = sqlx::query!(
+            r#"
+            INSERT INTO users (email,password) VALUES ($1, $2) RETURNING id
+            "#,
+            "admin@admin.com",
+            generate_hash("admin"),
+        )
+        .fetch_one(&pool)
+        .await
+        .expect("Error al crear el admin")
+        .id;
+        add_admin(&pool, user_id)
+            .await
+            .expect("Error al dar permisos de administrador al usuario admin");
+    }
 
     println!("Construyendo aplicación...");
     let mut cors = CorsLayer::new()
