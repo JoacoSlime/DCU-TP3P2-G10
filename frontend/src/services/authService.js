@@ -1,95 +1,105 @@
-let usuarios = [
-  { id: 1, email: 'admin@mail.com', password: '1234', rol: 'admin', invitado: false },
-  {
-    id: 2,
-    email: 'colaborador@mail.com',
-    password: '1234',
-    rol: 'colaborador',
-    invitado: false,
-  },
-]
-
-export function obtenerUsuarioActual() {
-  const userStr = localStorage.getItem('usuario_actual')
-  return userStr ? JSON.parse(userStr) : null
-}
-
-function guardarUsuarioActual(usuario) {
-  if (usuario) {
-    localStorage.setItem('usuario_actual', JSON.stringify(usuario))
-  } else {
-    localStorage.removeItem('usuario_actual')
-  }
-}
+const API_URL = '/api'
 
 export async function login(email, password) {
-  console.log('Email recibido:', email)
-  console.log('Password recibida:', password)
-  const usuario = usuarios.find((u) => u.email === email && u.password === password)
-  console.log('Usuario encontrado:', usuario)
-  if (!usuario) throw new Error('Credenciales inválidas')
-  const { password: _, ...usuarioSinPass } = usuario
-  guardarUsuarioActual(usuarioSinPass)
-  return { success: true, usuario: usuarioSinPass }
+  const res = await fetch(`${API_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.message || 'Credenciales inválidas')
+
+  // Guarda token
+  if (data.token) {
+    localStorage.setItem('auth_token', data.token)
+    console.log('Token guardado:', data.token.substring(0, 20) + '...')
+  } else if (data.data?.token) {
+    localStorage.setItem('auth_token', data.data.token)
+  }
+  return data
 }
 
 export async function logout() {
-  guardarUsuarioActual(null)
+  const token = localStorage.getItem('auth_token')
+  if (token) {
+    try {
+      await fetch(`${API_URL}/auth/logout`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    } catch (e) {}
+  }
+  localStorage.removeItem('auth_token')
 }
 
-export async function estaLogueado() {
-  return obtenerUsuarioActual() !== null
+export async function obtenerUsuarioActual() {
+  const token = localStorage.getItem('auth_token')
+  if (!token) return null
+  try {
+    const res = await fetch(`${API_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    return data.data || data.user
+  } catch {
+    return null
+  }
 }
 
 export async function esAdmin() {
-  const user = obtenerUsuarioActual()
-  return user?.rol === 'admin'
+  const user = await obtenerUsuarioActual()
+  return user?.role === 'admin' || user?.rol === 'admin'
 }
 
-export async function cambiarEmail(nuevoEmail, contraseñaActual) {
-  const usuarioActual = obtenerUsuarioActual()
-  if (!usuarioActual) throw new Error('No hay sesión')
-  const usuarioEnArray = usuarios.find((u) => u.id === usuarioActual.id)
-  if (usuarioEnArray.password !== contraseñaActual) throw new Error('Contraseña incorrecta')
-  usuarioEnArray.email = nuevoEmail
-  const { password: _, ...usuarioSinPass } = usuarioEnArray
-  guardarUsuarioActual(usuarioSinPass)
-  return { success: true, nuevoEmail }
+export async function cambiarEmail(nuevoEmail) {
+  const token = localStorage.getItem('auth_token')
+  const res = await fetch(`${API_URL}/collaborators/change_email`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ email: nuevoEmail }),
+  })
+  if (!res.ok) throw new Error('Error al cambiar email')
+  return res.json()
 }
 
-export async function cambiarContraseña(contraseñaActual, nuevaContraseña) {
-  const usuarioActual = obtenerUsuarioActual()
-  if (!usuarioActual) throw new Error('No hay sesión')
-  const usuarioEnArray = usuarios.find((u) => u.id === usuarioActual.id)
-  if (usuarioEnArray.password !== contraseñaActual) throw new Error('Contraseña actual incorrecta')
-  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
-  if (!regex.test(nuevaContraseña)) throw new Error('Requisitos de contraseña no cumplidos')
-  usuarioEnArray.password = nuevaContraseña
-  return { success: true }
+export async function cambiarContraseña(oldPassword, newPassword) {
+  const token = localStorage.getItem('auth_token')
+  const res = await fetch(`${API_URL}/collaborators/change_password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ old_password: oldPassword, new_password: newPassword }),
+  })
+  if (!res.ok) throw new Error('Error al cambiar contraseña')
+  return res.json()
 }
 
 export async function invitarColaborador(email) {
-  if (!(await esAdmin())) throw new Error('No autorizado')
-  if (usuarios.find((u) => u.email === email)) throw new Error('El usuario ya existe')
-  const nuevoId = Math.max(...usuarios.map((u) => u.id)) + 1
-  usuarios.push({
-    id: nuevoId,
-    email,
-    password: '',
-    rol: 'colaborador',
-    invitado: true,
-    token: `invite_${Date.now()}`,
+  const token = localStorage.getItem('auth_token')
+  const res = await fetch(`${API_URL}/collaborators/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ email }),
   })
-  return { success: true }
+  if (!res.ok) throw new Error('Error al invitar colaborador')
+  return res.json()
 }
 
-export async function registrarContraseña(token, nuevaContraseña) {
-  const usuario = usuarios.find((u) => u.token === token)
-  if (!usuario) throw new Error('Token inválido')
-  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
-  if (!regex.test(nuevaContraseña)) throw new Error('Requisitos no cumplidos')
-  usuario.password = nuevaContraseña
-  usuario.invitado = false
-  delete usuario.token
-  return { success: true }
+export async function registrarContraseña(tokenInvite, name, surname, password) {
+  const res = await fetch(`${API_URL}/collaborators/create_password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: tokenInvite, name, surname, password }),
+  })
+  if (!res.ok) throw new Error('Error al registrar contraseña')
+  return res.json()
 }

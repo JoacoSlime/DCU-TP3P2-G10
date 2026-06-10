@@ -10,6 +10,11 @@ onMounted(async () => {
 <template>
     <div>
         <h2>Mapa y puntos contaminados</h2>
+        <div style="margin-bottom: 1rem;">
+            <router-link to="/agregar-punto" class="boton">
+                + Agregar nuevo punto
+            </router-link>
+        </div>
 
         <div style="background:#bdc3c7; height:300px; display:flex; align-items:center; justify-content:center;">
             Mapa

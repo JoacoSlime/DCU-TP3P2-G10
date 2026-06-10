@@ -1,66 +1,58 @@
-let puntos = [
-  {
-    id: 1,
-    nombre: 'BER: BERNAL',
-    medicion: 'Alta',
-    lat: -34.718,
-    lng: -58.285,
-    fechaCreacion: '2025-01-01',
-    colaborador: 'Francisco B. Lopez',
-  },
-  {
-    id: 2,
-    nombre: 'QUI: QUILMES',
-    medicion: 'Media',
-    lat: -34.72,
-    lng: -58.26,
-    fechaCreacion: '2025-01-15',
-    colaborador: 'Maria Gomez',
-  },
-  {
-    id: 3,
-    nombre: 'HUD: HUDSON',
-    medicion: 'Baja',
-    lat: -34.73,
-    lng: -58.24,
-    fechaCreacion: '2025-02-01',
-    colaborador: 'Carlos Perez',
-  },
-]
+const API_URL = '/api'
 
 export async function obtenerPuntos() {
-  return [...puntos]
+  const res = await fetch(`${API_URL}/spots/list`)
+  if (!res.ok) throw new Error('Error al obtener puntos')
+  const data = await res.json()
+  return data.data.spots || []
 }
 
 export async function obtenerPuntoPorId(id) {
-  const punto = puntos.find((p) => p.id === Number(id))
-  if (!punto) throw new Error('Punto no encontrado')
-  return { ...punto }
+  const res = await fetch(`${API_URL}/spots/get?uuid=${id}`)
+  if (!res.ok) throw new Error('Punto no encontrado')
+  const data = await res.json()
+  return data.data.spot
 }
 
 export async function crearPunto(puntoData) {
-  const nuevoId = puntos.length > 0 ? Math.max(...puntos.map((p) => p.id)) + 1 : 1
-  const nuevoPunto = {
-    id: nuevoId,
-    ...puntoData,
-    fechaCreacion: new Date().toISOString().split('T')[0],
-    colaborador: 'anonimo',
-  }
-  puntos.push(nuevoPunto)
-  console.log('Punto creado:', nuevoPunto)
-  return { success: true, punto: nuevoPunto }
-}
+  const token = localStorage.getItem('auth_token')
 
-export async function actualizarPunto(id, datosActualizados) {
-  const index = puntos.findIndex((p) => p.id === Number(id))
-  if (index === -1) throw new Error('Punto no encontrado')
-  puntos[index] = { ...puntos[index], ...datosActualizados }
-  return { success: true, punto: puntos[index] }
+  // Verifica token
+  if (!token) {
+    throw new Error('No hay token de autenticación. Inicia sesión nuevamente.')
+  }
+
+  console.log('Token enviado:', token.substring(0, 20) + '...')
+
+  const body = {
+    title: puntoData.nombre,
+    latitude: String(puntoData.lat),
+    longitude: String(puntoData.lng),
+  }
+
+  const res = await fetch(`${API_URL}/spots/add`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: ` ${token}`,
+    },
+    body: JSON.stringify(body),
+  })
+
+  const data = await res.json()
+  if (!res.ok) {
+    console.error('Error respuesta:', data)
+    throw new Error(data.message || 'Error al crear punto')
+  }
+  return data
 }
 
 export async function eliminarPunto(id) {
-  const index = puntos.findIndex((p) => p.id === Number(id))
-  if (index === -1) throw new Error('Punto no encontrado')
-  puntos.splice(index, 1)
-  return { success: true }
+  const token = localStorage.getItem('auth_token')
+  const res = await fetch(`${API_URL}/spots/delete?uuid=${id}`, {
+    method: 'DELETE',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  })
+  if (!res.ok) throw new Error('Error al eliminar punto')
+  return res.json()
 }
