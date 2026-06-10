@@ -50,66 +50,66 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         .route(
             "/api/measures/add",
             post(add_measure)
-                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth))
                 .route_layer(middleware::from_fn_with_state(
                     app_state.clone(),
                     |state, req, next| require_permission(state, req, next, "measures.add"),
-                )),
+                ))
+                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth)),
         )
         .route(
             "/api/spots/add",
             post(add_spot)
-                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth))
                 .route_layer(middleware::from_fn_with_state(
                     app_state.clone(),
                     |state, req, next| require_permission(state, req, next, "spots.add"),
-                )),
+                ))
+                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth)),
         )
         // Administrator routes
         .route(
             "/api/collaborators/register",
             post(register_collaborator)
-                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth))
                 .route_layer(middleware::from_fn_with_state(
                     app_state.clone(),
                     |state, req, next| require_permission(state, req, next, "collaborators.add"),
-                )),
+                ))
+                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth)),
         )
         .route(
             "/api/collaborators/list",
             get(list_collaborators)
-                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth))
                 .route_layer(middleware::from_fn_with_state(
                     app_state.clone(),
                     |state, req, next| require_permission(state, req, next, "collaborators.list"),
-                )),
+                ))
+                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth)),
         )
         .route(
             "/api/collaborators/delete",
             delete(delete_collaborator)
-                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth))
                 .route_layer(middleware::from_fn_with_state(
                     app_state.clone(),
                     |state, req, next| require_permission(state, req, next, "collaborators.delete"),
-                )),
+                ))
+                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth)),
         )
         .route(
             "/api/measures/delete",
             delete(delete_measure)
-                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth))
                 .route_layer(middleware::from_fn_with_state(
                     app_state.clone(),
                     |state, req, next| require_permission(state, req, next, "measures.delete"),
-                )),
+                ))
+                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth)),
         )
         .route(
             "/api/spots/delete",
             delete(delete_spot)
-                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth))
                 .route_layer(middleware::from_fn_with_state(
                     app_state.clone(),
                     |state, req, next| require_permission(state, req, next, "spots.delete"),
-                )),
+                ))
+                .route_layer(middleware::from_fn_with_state(app_state.clone(), auth)),
         )
         .with_state(app_state)
 }
