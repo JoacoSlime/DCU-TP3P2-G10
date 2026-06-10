@@ -1,4 +1,8 @@
+use std::error::Error;
+
 use ammonia::clean;
+use sqlx::PgPool;
+use uuid::Uuid;
 use validator::ValidationError;
 
 pub fn sanitize_input(input: &str) -> String {
@@ -62,4 +66,98 @@ pub fn validate_positive_decimal(decimal: &rust_decimal::Decimal) -> Result<(), 
         Err(ValidationError::new("negative_decimal")
             .with_message("El valor decimal no puede ser negativo".into()))
     }
+}
+
+pub async fn has_admin_user(pool: &PgPool) -> Result<bool, Box<dyn Error>> {
+    // Returns true if at least one user belongs to the "administrators" group.
+    let exists: (bool,) = sqlx::query_as(
+        r#"
+        SELECT EXISTS(
+            SELECT 1
+            FROM users u
+            JOIN users_groups ug ON u.id = ug.user_id
+            JOIN groups g ON ug.group_id = g.id
+            WHERE g.name = 'administrators'
+        ) ;
+        "#,
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(exists.0)
+}
+
+pub async fn add_admin(db: &PgPool, user_id: Uuid) -> Result<(), Box<dyn Error>> {
+    // get administrators group id
+    let admin_group_id: Option<Uuid> = sqlx::query_scalar!(
+        r#"
+        select id::uuid
+        from groups
+        where name = 'administrators'
+        limit 1
+        "#
+    )
+    .fetch_optional(db)
+    .await?;
+
+    let admin_group_id = admin_group_id
+        .ok_or_else(|| Box::new(std::io::Error::other("administrators group not found")))?;
+
+    // get collaborators group id
+    let collab_group_id: Option<Uuid> = sqlx::query_scalar!(
+        r#"
+        select id::uuid
+        from groups
+        where name = 'collaborators'
+        limit 1
+        "#
+    )
+    .fetch_optional(db)
+    .await?;
+
+    let collab_group_id = collab_group_id
+        .ok_or_else(|| Box::new(std::io::Error::other("collaborators group not found")))?;
+
+    // ensure user exists
+    let user_exists: bool = sqlx::query_scalar!(
+        r#"
+        select exists (
+            select 1 from users where id = $1
+        ) as "exists!"
+        "#,
+        user_id
+    )
+    .fetch_one(db)
+    .await?;
+
+    if !user_exists {
+        return Err(Box::new(std::io::Error::other("target user not found")));
+    }
+
+    // add to administrators (idempotent)
+    sqlx::query!(
+        r#"
+        insert into users_groups (user_id, group_id)
+        values ($1, $2)
+        on conflict do nothing
+        "#,
+        user_id,
+        admin_group_id
+    )
+    .execute(db)
+    .await?;
+
+    // add to collaborators (idempotent)
+    sqlx::query!(
+        r#"
+        insert into users_groups (user_id, group_id)
+        values ($1, $2)
+        on conflict do nothing
+        "#,
+        user_id,
+        collab_group_id
+    )
+    .execute(db)
+    .await?;
+
+    Ok(())
 }

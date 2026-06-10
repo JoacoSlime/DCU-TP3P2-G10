@@ -10,7 +10,7 @@ axum-extra = { version = "0.12.6", features = ["cookie"] }
 base62 = "2.2.4"
 chrono = "0.4.44"
 dotenv = "0.15.0"
-jsonwebtoken = "10.4.0"
+jsonwebtoken = { version = "10.4.0", features = ["rust_crypto"] }
 password-auth = "1.0.0"
 resend-rs = "0.25.1"
 rust_decimal = "1.42.0"
