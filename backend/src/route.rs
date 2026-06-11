@@ -27,12 +27,12 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         .route("/api/auth/me", get(me))
         .route("/api/auth/login", post(login))
         .route("/api/collaborators/create_password", post(create_password))
-        .route("/api/collaborators/get/:user_id", get(get_collaborator))
-        .route("/api/measures/get/:measure_id", get(get_measure))
+        .route("/api/collaborators/get/{user_id}", get(get_collaborator))
+        .route("/api/measures/get/{measure_id}", get(get_measure))
         .route("/api/measures/list", get(list_measures))
-        .route("/api/spots/get/:spot_id", get(get_spot))
+        .route("/api/spots/get/{spot_id}", get(get_spot))
         .route("/api/spots/list", get(list_spots))
-        .route("/api/spots/measures/:spot_id", get(get_measures))
+        .route("/api/spots/measures/{spot_id}", get(get_measures))
         // Collaborator routes
         .route(
             "/api/auth/logout",
@@ -85,7 +85,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
                 .route_layer(middleware::from_fn_with_state(app_state.clone(), auth)),
         )
         .route(
-            "/api/collaborators/delete/:user_id",
+            "/api/collaborators/delete/{user_id}",
             delete(delete_collaborator)
                 .route_layer(middleware::from_fn_with_state(
                     app_state.clone(),
@@ -94,7 +94,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
                 .route_layer(middleware::from_fn_with_state(app_state.clone(), auth)),
         )
         .route(
-            "/api/measures/delete/:measure_id",
+            "/api/measures/delete/{measure_id}",
             delete(delete_measure)
                 .route_layer(middleware::from_fn_with_state(
                     app_state.clone(),
@@ -103,7 +103,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
                 .route_layer(middleware::from_fn_with_state(app_state.clone(), auth)),
         )
         .route(
-            "/api/spots/delete/:spot_id",
+            "/api/spots/delete/{spot_id}",
             delete(delete_spot)
                 .route_layer(middleware::from_fn_with_state(
                     app_state.clone(),
