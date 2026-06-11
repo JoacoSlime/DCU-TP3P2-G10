@@ -21,7 +21,7 @@ defineEmits(['click'])
 <style scoped>
 .btn {
   border: none;
-  border-radius: 20px;
+  border-radius: 50px;
   box-shadow: 0px 4px 2px rgba(0, 0, 0, 0.25);
   color: white;
   cursor: pointer;
@@ -34,9 +34,29 @@ defineEmits(['click'])
   transition: transform 0.2s;
 }
 
-.btn.info { background-color: #179299; }
-.btn.help { background-color: #40a02b; }
-.btn:hover { transform: translateY(-2px); }
+.btn.info { 
+  background-color: #19a1a8; 
+  border-radius: 50px;
+}
+.btn.info:hover { 
+  transform: translateY(-2px); 
+  background-color: #10666b; 
+}
+.btn.help { 
+  background-color: #40a02b; 
+  font-size: 10px;
+  padding: 0;
+  width: 50px;   
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.btn.help:hover { 
+  transform: translateY(-2px); 
+  background-color: #2b6b1d; 
+}
 .btn.secondary { background-color: #94a3b8; } 
 .btn.colaborador { background-color: #2563eb; }
 </style>

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import MapaView from '../views/MapaView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,12 +8,17 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: MapaView,
     },
     {
       path: '/ayuda',
       name: 'Ayuda',
       component: () => import('../views/AyudaView.vue'),
+    },
+    {
+      path: '/iniciar-sesion',
+      name: 'Iniciar sesion',
+      component: () => import('../views/IniciarSesionView.vue'),
     },
     {
       path: '/elegir-usuario',
@@ -38,9 +44,14 @@ const router = createRouter({
       component: () => import('../views/MapaView.vue'),
     },
     {
-      path: '/capacitor',
-      name: 'capacitor',
-      component: () => import('../views/CapacitorView.vue'),
+      path: '/lista-puntos',
+      name: 'ListaPuntos',
+      component: () => import('../views/ListaPuntosView.vue'),
+    },
+    {
+      path: '/lista-puntos/punto/:id',
+      name: 'PuntoContaminado',
+      component: () => import('../views/PuntoView.vue'),
     },
   ],
 })

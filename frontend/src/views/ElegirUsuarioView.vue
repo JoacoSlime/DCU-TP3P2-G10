@@ -43,7 +43,7 @@ const handleHelp = () => {
     </div>
 
     <footer class="footer-actions">
-       <Boton label="Necesito ayuda" variant="help" @click="handleHelp()"/>
+       <Boton label="?" variant="help" @click="handleHelp()"/>
     </footer>
   </main>
 </template>

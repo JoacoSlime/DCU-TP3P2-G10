@@ -1,20 +1,3 @@
-<template>
-  <header class="navbar">
-   <img src="/logoapp.png" 
-   alt="Logo ContaminApp" 
-   class="logo" 
-   @click="irAlInicio" />
-
-   <button 
-      v-if="route.path !== '/'" 
-      class="nav-option" 
-      @click="irAtras"
-    >
-      ← Volver
-    </button>
-  </header>
-</template>
-
 <script setup>
 import { useRouter, useRoute} from 'vue-router'
 
@@ -29,8 +12,25 @@ const irAtras = () => {
   router.back();
 };
 
-
 </script>
+
+<template>
+  <header class="navbar">
+   <img src="/logoapp.png" 
+   alt="Logo ContaminApp" 
+   class="logo" 
+   @click="irAlInicio" />
+
+   <button 
+      v-if="route.path !== '/'" 
+      class="nav-option" 
+      @click="irAtras"
+    >
+      ← Volver
+    </button>
+    
+  </header>
+</template>
 
 <style scoped>
 .navbar {
@@ -50,6 +50,7 @@ const irAtras = () => {
   height: 40px;
   cursor: pointer; 
   transition: opacity 0.2s;
+  border-radius: 40px;
 }
 
 .logo:hover {
