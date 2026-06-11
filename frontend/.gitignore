@@ -37,3 +37,8 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+# Capacitor + Android
+android/capacitor.settings.gradle
+android/app/capacitor.build.gradle
+android/.kotlin

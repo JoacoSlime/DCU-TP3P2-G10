@@ -34,9 +34,9 @@
   justify-content: center; 
   align-items: center;
   z-index: 9999; /* Asegura que tape TODO */
-  font-family: sans-serif;
 }
 .modal-content {
+  font-family: sans-serif;
   background: rgb(255, 255, 255); 
   padding: 30px; 
   border-radius: 20px;

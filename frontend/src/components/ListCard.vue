@@ -23,7 +23,7 @@ const getLevelColor = (nivel) => {
       <li v-for="item in items" :key="item.id" class="item-row">
         <span class="item-name">{{ item.nombre }}</span>
 
-        <router-link :to="'/lista-puntos/punto/' + item.id" custom v-slot="{ navigate }">
+        <router-link :to="'/punto/:' + item.id" custom v-slot="{ navigate }">
           <Boton 
             label="Ir al punto" 
             variant="info" 

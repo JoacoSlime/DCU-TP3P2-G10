@@ -12,6 +12,23 @@ const irAtras = () => {
   router.back();
 };
 
+const irAListadoPuntos = () => {
+  router.push('/listado-puntos');
+};
+
+
+const irALogin = () => {
+  router.push('/login');
+};
+
+const irALogout = () => {
+  localStorage.removeItem('logged')
+  localStorage.removeItem('role')
+  router.push('/')
+  window.location.reload()
+  console.log('cierro sesion')
+};
+
 </script>
 
 <template>
@@ -27,6 +44,32 @@ const irAtras = () => {
       @click="irAtras"
     >
       ← Volver
+    </button>
+
+     <button 
+      id="b-listaP"
+      class="nav-option push-right" 
+      @click="irAListadoPuntos"
+    >
+      Listado de puntos
+    </button>
+
+    <button 
+      id="b-login"
+      v-if="route.path == '/'" 
+      class="nav-option push-right" 
+      @click="irALogin"
+    >
+      Iniciar Sesión
+    </button>
+
+    <button 
+      id="b-logout"
+      v-if="route.path == '/admin/mapa'" 
+      class="nav-option push-right" 
+      @click="irALogout"
+    >
+      Cerrar Sesión
     </button>
     
   </header>
@@ -60,7 +103,7 @@ const irAtras = () => {
 .nav-option {
   background: none;
   border: none;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #4c4f69;
   cursor: pointer;
@@ -78,5 +121,13 @@ const irAtras = () => {
 .nav-option:hover {
   background-color: #f1f5f9; 
   color: #179299; 
+}
+
+.push-right {
+  margin-left: auto;
+}
+
+#b-listaP {
+  margin-left: 30px;
 }
 </style>

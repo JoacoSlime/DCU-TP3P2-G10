@@ -1,52 +1,30 @@
 <script setup>
-import { ref } from 'vue'
-import Boton from '../components/Boton.vue'
-import { useRouter } from 'vue-router'
+  import { ref } from 'vue'
+  import Boton from '../components/Boton.vue'
+  import { useRouter } from 'vue-router'
+  import { login } from '@/services/authService.js'
 
-const router = useRouter()
+  const router = useRouter()
 
-const step = ref(1)
-const email = ref('')
-const password = ref('')
+  const step = ref(1)
+  const email = ref('')
+  const password = ref('')
 
-const API_URL = import.meta.env.VITE_API_URL
+  const API_URL = import.meta.env.VITE_API_URL
 
-
-
-const handleLogin = async () => {
-  try {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value
-      })
-    })
-
-    const data = await response.json()
-
-    if (response.ok) {
-      localStorage.setItem('role', data.role)
-      localStorage.setItem('logged', 'true')
-      if (data.role === 'admin') {
-        router.push('/admin/mapa')
-      } else {
-        router.push('/mapa') 
-      }
-
-    } else {
-      alert('Credenciales incorrectas')
-    }
-
-  } catch (error) {
-    console.error('Error al conectar con el servidor:', error)
+  const goToMap = () => {
+    router.push('/admin/mapa')
   }
-}  
 
-const goToMap = () => {
-  router.push('/admin/mapa')
-}
+  async function iniciarSesion() {
+      try {
+          await login(email.value, password.value)
+          router.push('/')
+          const logged = localStorage.getItem('logged')
+      } catch (err) {
+          alert(err.message)
+      }
+  }
 
 </script>
 
@@ -64,82 +42,83 @@ const goToMap = () => {
           <Boton label="Siguiente" variant="info" class="btn-next" @click="step = 2" />
         </div>
       </div>
-
-      <div v-else>
+      <form v-else @submit.prevent="iniciarSesion">
         <h2 class="login-title">Hola, {{ email }}</h2>
-
         <div class="input-group">
           <input  
             type="password"
             placeholder="Contraseña" 
             v-model="password"
-            class="login-input" />
+            class="login-input" 
+          />
         </div>
         <div class="actions">
           <Boton label="Siguiente" variant="info" class="btn-next" @click="goToMap" />
         </div>
-      </div>
+      </form>
     </div>
   </main>
 </template>
 
 <style scoped>
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: #f0f2f5;
-}
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f0f2f5;
+  }
 
-.login-card {
-  background: white;
-  padding: 50px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 800px;
-  text-align: center;
-}
+  .login-card {
+    background: white;
+    padding: 50px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+  }
 
-.login-logo {
-  height: 100px;
-  cursor: pointer; 
-  transition: opacity 0.2s;
-  border-radius: 40px;
-}
+  .login-logo {
+    height: 100px;
+    cursor: pointer; 
+    transition: opacity 0.2s;
+    border-radius: 40px;
+  }
 
-.login-title {
-  margin-top: 3rem;
-  font-size: 2rem;
-  color: #4a5568;
-  margin-bottom: 1.5rem;
-}
+  .login-title {
+    margin-top: 3rem;
+    font-size: 2rem;
+    color: #4a5568;
+    margin-bottom: 1.5rem;
+  }
 
-.login-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 1rem;
-  border: 1px solid #a3a8ad;
-  border-radius: 6px;
-}
+  .login-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 1rem;
+    border: 1px solid #a3a8ad;
+    border-radius: 6px;
+  }
 
-.checkbox-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-  color: #4a5568;
-}
-.actions {
-  display: flex;
-  justify-content: flex-end;
-}
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: #4a5568;
+  }
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+  }
 
-.btn-next {
-  width: auto;
-  padding: 8px 20px;
-  font-size: 0.9rem;
-}
+  .btn-next {
+    width: auto;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+  }
 </style>
+
+

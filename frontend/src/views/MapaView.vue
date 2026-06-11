@@ -6,7 +6,7 @@ import Modal from '../components/Modal.vue'
 import ListCard from '../components/ListCard.vue'
 
 let map = null
-const showModal = ref(false)
+const showModal = ref(true)
 
 const puntosContaminacion = [
   { id: 1, lat: -34.7, lng: -58.2, nivel: 'alto', nombre: 'BER: BERNAL' },
@@ -15,9 +15,15 @@ const puntosContaminacion = [
 
 onMounted(() => {
 
-  console.log("ROLE RAW:", localStorage.getItem('role'))
-  const role = (localStorage.getItem('role') || '').trim().toLowerCase()
-  showModal.value = role !== 'admin'
+  const logged = localStorage.getItem('logged');
+  const role = localStorage.getItem('role');
+
+  console.log("--- DEBUG DE SESIÓN ---");
+  console.log("Valor de 'logged':", logged);
+  console.log("Valor de 'role':", role);
+  
+  showModal.value = true;
+  console.log("ShowModal ahora es:", showModal.value);
 
   map = L.map('map').setView([-34.7, -58.2], 10)
 
@@ -39,6 +45,21 @@ onMounted(() => {
 const centrarMapa = (punto) => {
   map.setView([punto.lat, punto.lng], 15)
 }
+
+const searchQuery = ref('')
+import { computed } from 'vue'
+
+const puntosFiltrados = computed(() => {
+  const query = searchQuery.value.toLowerCase();
+ 
+  if (!query) return puntosContaminacion;
+  
+
+  return puntosContaminacion.filter(p => 
+    p.nombre.toLowerCase().includes(query)
+  );
+})
+
 </script>
 
 <template>
@@ -48,10 +69,11 @@ const centrarMapa = (punto) => {
     <ListCard v-if="!showModal"
       class="floating-list"
       title="Puntos de Contaminación" 
-      :items="puntosContaminacion" 
+      :items="puntosFiltrados" 
       @go-to="centrarMapa" 
     />
-    <Modal v-if="showModal" @close="showModal = false" />
+    <p v-if="puntosFiltrados.length === 0">No se encontraron puntos</p>
+    <Modal v-if="showModal" :show="true" @close="showModal = false" />
   </div>
 </template>
 

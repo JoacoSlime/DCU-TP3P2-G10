@@ -1,0 +1,256 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        select\n            s.id as \"spot_id!\",\n            m.id as \"measure_id!\",\n            s.title,\n            s.latitude,\n            s.longitude,\n            m.collaborator_id,\n            m.created_at,\n            m.items_per_m2,\n            m.weight,\n            m.area,\n            m.pet,\n            m.pead,\n            m.pebd,\n            m.pvc,\n            m.pp,\n            m.ps,\n            m.pa,\n            m.other,\n            m.ihr_plata,\n            m.ibirp\n        from spots s\n        join lateral (\n            select *\n            from measures\n            where spot_id = s.id\n            order by created_at desc\n            limit 1\n        ) m on true\n        where s.id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "spot_id!",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "spots",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "measure_id!",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "title",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "spots",
+            "name": "title"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "latitude",
+        "type_info": "Numeric",
+        "origin": {
+          "Table": {
+            "table": "spots",
+            "name": "latitude"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "longitude",
+        "type_info": "Numeric",
+        "origin": {
+          "Table": {
+            "table": "spots",
+            "name": "longitude"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "collaborator_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "collaborator_id"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "items_per_m2",
+        "type_info": "Numeric",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "items_per_m2"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "weight",
+        "type_info": "Numeric",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "weight"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "area",
+        "type_info": "Numeric",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "area"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "pet",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "pet"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "pead",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "pead"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "pebd",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "pebd"
+          }
+        }
+      },
+      {
+        "ordinal": 13,
+        "name": "pvc",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "pvc"
+          }
+        }
+      },
+      {
+        "ordinal": 14,
+        "name": "pp",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "pp"
+          }
+        }
+      },
+      {
+        "ordinal": 15,
+        "name": "ps",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "ps"
+          }
+        }
+      },
+      {
+        "ordinal": 16,
+        "name": "pa",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "pa"
+          }
+        }
+      },
+      {
+        "ordinal": 17,
+        "name": "other",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "other"
+          }
+        }
+      },
+      {
+        "ordinal": 18,
+        "name": "ihr_plata",
+        "type_info": "Numeric",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "ihr_plata"
+          }
+        }
+      },
+      {
+        "ordinal": 19,
+        "name": "ibirp",
+        "type_info": "Numeric",
+        "origin": {
+          "Table": {
+            "table": "measures",
+            "name": "ibirp"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "b1fb1f08fe072ac555abd1e4e36f2160783026b565994b3e6e83fc4d1497cbf2"
+}

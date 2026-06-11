@@ -13,7 +13,7 @@ const handleHelp = () => {
 }
 
 const login = () => {
-  router.push('/iniciar-sesion')
+  router.push('/login')
 }
 </script>
 
