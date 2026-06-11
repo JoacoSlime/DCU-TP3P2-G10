@@ -28,8 +28,8 @@ Prerrequisitos:
 
 Desde la carpeta `frontend`:
 
-- Instalar con `bun run build`
-- Compilar estáticos con `bun cap sync android`
+- Compilar estáticos con `bun run build`
+- Sincronizar configuración de Android con `bun cap sync android`
 - Abrir en android studio con `bun cap open android`
 - En Android Studio: `Build → Generate Signed Bundle/APK` y Compilar APK
 
