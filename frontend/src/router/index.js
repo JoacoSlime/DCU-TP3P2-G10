@@ -16,7 +16,7 @@ const router = createRouter({
       component: () => import('../views/AyudaView.vue'),
     },
     {
-      path: '/iniciar-sesion',
+      path: '/login',
       name: 'Iniciar sesion',
       component: () => import('../views/IniciarSesionView.vue'),
     },
@@ -38,9 +38,14 @@ const router = createRouter({
       name: 'Usuario colaborador',
       component: () => import('../views/ColaboradorView.vue'),
     },
-     {
+    {
       path: '/mapa',
       name: 'Mapa',
+      component: () => import('../views/MapaView.vue'),
+    },
+    {
+      path: '/admin/mapa',
+      name: 'MapaAdmin',
       component: () => import('../views/MapaView.vue'),
     },
     {

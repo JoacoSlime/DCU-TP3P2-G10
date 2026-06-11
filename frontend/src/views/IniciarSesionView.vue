@@ -1,15 +1,53 @@
 <script setup>
 import { ref } from 'vue'
 import Boton from '../components/Boton.vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const step = ref(1)
 const email = ref('')
 const password = ref('')
 
-const handleLogin = () => {
-  //logica backend
-  alert('Iniciando sesión...')
+const API_URL = import.meta.env.VITE_API_URL
+
+
+
+const handleLogin = async () => {
+  try {
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value
+      })
+    })
+
+    const data = await response.json()
+
+    if (response.ok) {
+      localStorage.setItem('role', data.role)
+      localStorage.setItem('logged', 'true')
+      if (data.role === 'admin') {
+        router.push('/admin/mapa')
+      } else {
+        router.push('/mapa') 
+      }
+
+    } else {
+      alert('Credenciales incorrectas')
+    }
+
+  } catch (error) {
+    console.error('Error al conectar con el servidor:', error)
+  }
+}  
+
+const goToMap = () => {
+  router.push('/admin/mapa')
 }
+
 </script>
 
 <template>
@@ -38,7 +76,7 @@ const handleLogin = () => {
             class="login-input" />
         </div>
         <div class="actions">
-          <Boton label="Siguiente" variant="info" class="btn-next" @click="step = 2" />
+          <Boton label="Siguiente" variant="info" class="btn-next" @click="goToMap" />
         </div>
       </div>
     </div>
@@ -65,7 +103,7 @@ const handleLogin = () => {
 }
 
 .login-logo {
-  height: 200px;
+  height: 100px;
   cursor: pointer; 
   transition: opacity 0.2s;
   border-radius: 40px;
@@ -73,7 +111,7 @@ const handleLogin = () => {
 
 .login-title {
   margin-top: 3rem;
-  font-size: 1.2rem;
+  font-size: 2rem;
   color: #4a5568;
   margin-bottom: 1.5rem;
 }

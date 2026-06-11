@@ -1,38 +1,42 @@
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { ref } from 'vue'
 import Modal from '../components/Modal.vue'
 import ListCard from '../components/ListCard.vue'
 
-const showModal = ref(true)
+let map = null
+const showModal = ref(false)
 
-// Simulación de datos (esto vendría de tu backend en Rust)
 const puntosContaminacion = [
   { id: 1, lat: -34.7, lng: -58.2, nivel: 'alto', nombre: 'BER: BERNAL' },
   { id: 2, lat: -34.9, lng: -57.9, nivel: 'bajo', nombre: 'LP: LA PLATA' }
 ]
 
 onMounted(() => {
-  const map = L.map('map').setView([-34.7, -58.2], 10)
+
+  console.log("ROLE RAW:", localStorage.getItem('role'))
+  const role = (localStorage.getItem('role') || '').trim().toLowerCase()
+  showModal.value = role !== 'admin'
+
+  map = L.map('map').setView([-34.7, -58.2], 10)
+
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
 
   puntosContaminacion.forEach(p => {
-    // Definimos colores según nivel
     const colores = { alto: 'red', medio: 'orange', bajo: 'yellow' }
-    
-    // Crear marcador con color
+
     L.circleMarker([p.lat, p.lng], {
       color: colores[p.nivel],
       radius: 10,
       fillOpacity: 0.8
-    }).addTo(map).bindPopup(p.nombre)
+    })
+      .addTo(map)
+      .bindPopup(p.nombre)
   })
 })
 
 const centrarMapa = (punto) => {
-  // Aquí accedes al objeto Leaflet 'map' y haces el setView
   map.setView([punto.lat, punto.lng], 15)
 }
 </script>
@@ -47,7 +51,7 @@ const centrarMapa = (punto) => {
       :items="puntosContaminacion" 
       @go-to="centrarMapa" 
     />
-    <Modal :show="showModal" @close="showModal = false" />
+    <Modal v-if="showModal" @close="showModal = false" />
   </div>
 </template>
 

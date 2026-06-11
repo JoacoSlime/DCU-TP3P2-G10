@@ -10,7 +10,6 @@
         <img src="/logoapp.png" alt="Logo ContaminApp" class="modal-logo" />
         <h1>¡Bienvenido a ContaminApp!</h1>
         <p>App de gestión de puntos de contaminación en la Franja Costera Sur</p>
-        
         <button class="btn-bienvenida" @click="$emit('close')">
           VER PUNTOS EN EL MAPA
         </button>
@@ -47,6 +46,8 @@
   margin:20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   box-sizing: border-box;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 .btn-bienvenida {
   background: #19a1a8; color: white; border: none;
@@ -54,13 +55,14 @@
   font-weight: 700; margin: 20px 0;
 }
 .modal-logo {
-  width: 200px;      /* Ajustá el tamaño a tu gusto */
+  width: 200px;     
   height: auto;
-  margin-bottom: 15px; /* Separación con el título */
+  margin-bottom: 15px; 
   display: block;
   margin-left: auto;
   margin-right: auto;
   max-width: 100%;
   margin: 0 auto 15px auto;
+  border-radius: 40px;
 }
 </style>
