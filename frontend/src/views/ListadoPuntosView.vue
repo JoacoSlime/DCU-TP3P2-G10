@@ -49,7 +49,7 @@ async function eliminar() {
 
         <ul>
             <li v-for="punto in puntos" :key="punto.id">
-                <router-link :to="`/punto/${punto.id}`">{{ punto.nombre }}</router-link>
+                <router-link :to="`/punto/${punto.id}`">{{ punto.title }}</router-link>
                 <button @click="abrirModalEliminar(punto)">Eliminar</button>
             </li>
         </ul>

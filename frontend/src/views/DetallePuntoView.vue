@@ -8,9 +8,24 @@ import MigasDePan from '@/components/MigasPan.vue'
 const route = useRoute()
 const punto = ref(null)
 
+// Log para ver qué hay en route.params
+console.log('route.params:', route.params)
+console.log('route.params.id:', route.params.id)
+
 onMounted(async () => {
     const id = route.params.id
-    punto.value = await obtenerPuntoPorId(id)
+    console.log('ID obtenido:', id)
+
+    if (id) {
+        try {
+            punto.value = await obtenerPuntoPorId(id)
+            console.log('Punto cargado:', punto.value)
+        } catch (error) {
+            console.error('Error al cargar punto:', error)
+        }
+    } else {
+        console.error('No hay ID en la ruta')
+    }
 })
 const migas = computed(() => [
     {

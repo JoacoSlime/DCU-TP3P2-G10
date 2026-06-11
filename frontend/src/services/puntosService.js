@@ -1,12 +1,28 @@
+import { API_URL } from '@/config'
+
+console.log('API_URL actual:', API_URL)
+
 export async function obtenerPuntos() {
   const res = await fetch(`${API_URL}/spots/list`)
   if (!res.ok) throw new Error('Error al obtener puntos')
   const data = await res.json()
-  return data.data.spots || []
+
+  // Transformar los puntos para que tengan un campo 'id'
+  return (data.data.spots || []).map((spot) => ({
+    id: spot.spot_id || spot.id, // ← Agregar campo 'id'
+    title: spot.title,
+    latitude: spot.latitude,
+    longitude: spot.longitude,
+    // ... otros campos que necesites
+  }))
 }
 
 export async function obtenerPuntoPorId(id) {
-  const res = await fetch(`${API_URL}/spots/get?uuid=${id}`)
+  if (!id) {
+    throw new Error('ID no proporcionado')
+  }
+
+  const res = await fetch(`${API_URL}/spots/get/${id}`)
   if (!res.ok) throw new Error('Punto no encontrado')
   const data = await res.json()
   return data.data.spot
@@ -15,7 +31,6 @@ export async function obtenerPuntoPorId(id) {
 export async function crearPunto(puntoData) {
   const token = localStorage.getItem('auth_token')
 
-  // Verifica token
   if (!token) {
     throw new Error('No hay token de autenticación. Inicia sesión nuevamente.')
   }
@@ -24,15 +39,30 @@ export async function crearPunto(puntoData) {
 
   const body = {
     title: puntoData.nombre,
-    latitude: String(puntoData.lat),
-    longitude: String(puntoData.lng),
+    latitude: parseFloat(puntoData.lat),
+    longitude: parseFloat(puntoData.lng),
+    items_per_m2: 0.001,
+    weight: 0.001,
+    area: 0.001,
+    pet: 1,
+    pead: 1,
+    pebd: 0,
+    pvc: 0,
+    pp: 0,
+    ps: 0,
+    pa: 0,
+    other: 0,
+    ihr_plata: 0.001,
+    ibirp: 0.001,
   }
+
+  console.log('Enviando body:', body)
 
   const res = await fetch(`${API_URL}/spots/add`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: ` ${token}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(body),
   })

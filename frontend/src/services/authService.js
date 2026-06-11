@@ -1,4 +1,6 @@
-const API_URL = '/api'
+import { API_URL } from '@/config'
+
+console.log('API_URL actual:', API_URL)
 
 export async function login(email, password) {
   const res = await fetch(`${API_URL}/auth/login`, {
