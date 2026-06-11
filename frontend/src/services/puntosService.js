@@ -1,5 +1,3 @@
-const API_URL = '/api'
-
 export async function obtenerPuntos() {
   const res = await fetch(`${API_URL}/spots/list`)
   if (!res.ok) throw new Error('Error al obtener puntos')
