@@ -6,7 +6,12 @@
 
 Desde la carpeta `backend` crear un archivo `.env` basado en `.env.example`:
 
-- Ejecutar con `docker compose up --build`
+- Iniciar backend con `docker compose up`
+
+Primer inicio:
+
+- `docker compose exec backend flask reset-db`
+- `docker compose exec backend flask seed-db`
 
 ## Corriendo el Frontend
 
@@ -37,10 +42,11 @@ Desde la carpeta `frontend`:
 
 ### Backend
 
-- DATABASE_URL: Indica al backend la dirección de postgres.
-- RESEND_KEY: Key de la api de Resend para el envio de emails.
-- JWT_SECRET: Secreto JWT utilizado para la autentificación con jsonwebtokens.
-- BACKEND_URL (opcional): URL del backend, utilizado por CORS.
+- `POSTGRES_PASSWORD`: Contraseña utilizada por Postres y Flask para conectarse.
+- `RESEND_KEY`: Key de la api de Resend para el envio de emails.
+- `JWT_SECRET`: Secreto JWT utilizado para la autentificación con JWT.
+- `FLASK_SECRET_KEY`: Utilizado por Flask para la generación de sesiones, CSRF, etc.
+- `URL_BASE_PUBLIC_APP` (opcional): URL del backend, utilizado por CORS.
 
 ### Frontend
 
