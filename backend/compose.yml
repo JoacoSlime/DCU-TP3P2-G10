@@ -1,0 +1,51 @@
+services:
+    postgres:
+        image: postgres:18-alpine
+        container_name: contaminapp-postgres
+        environment:
+            POSTGRES_DB: contaminapp
+            POSTGRES_USER: contaminapp
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+        volumes:
+            - postgres_data:/var/lib/postgresql
+        networks:
+            - contaminapp-network
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U contaminapp"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    backend:
+        build:
+            context: .
+            target: production
+        container_name: contaminapp-backend
+        environment:
+            - FLASK_ENV=production
+            - DATABASE_URL=postgresql://contaminapp:${POSTGRES_PASSWORD:-changeme}@postgres:5432/contaminapp
+            - RESEND_KEY=${RESEND_KEY}
+            - JWT_SECRET=${JWT_SECRET}
+            - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+        ports:
+            - "5000:5000"
+        depends_on:
+            postgres:
+                condition: service_healthy
+        networks:
+            - contaminapp-network
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:5000/healthcheck"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 10s
+
+volumes:
+    postgres_data:
+
+networks:
+    contaminapp-network:
+        driver: bridge
