@@ -46,10 +46,14 @@ async function eliminar() {
     <div>
         <MigasDePan :items="migas" />
         <h2>Listado de puntos contaminados</h2>
-
+        <div style="margin-bottom: 1rem;">
+            <router-link to="/agregar-punto" class="boton">
+                + Agregar nuevo punto
+            </router-link>
+        </div>
         <ul>
             <li v-for="punto in puntos" :key="punto.id">
-                <router-link :to="`/punto/${punto.id}`">{{ punto.title }}</router-link>
+                <router-link :to="`/punto/${punto.id}`">{{ punto.nombre }}</router-link>
                 <button @click="abrirModalEliminar(punto)">Eliminar</button>
             </li>
         </ul>

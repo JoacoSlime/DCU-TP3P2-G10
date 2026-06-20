@@ -2,21 +2,46 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import MigasDePan from '@/components/MigasPan.vue'
-import { esAdmin, logout } from '@/services/authService.js'
+import IniciarSesionModal from '@/components/IniciarSesionModal.vue'
+import { esAdmin, logout, obtenerUsuarioActual } from '@/services/authService.js'
 
 const router = useRouter()
 const isAdmin = ref(false)
+const logueado = ref(false)
+const rol = ref('')
+const mostrarLogin = ref(false)
 
 onMounted(async () => {
-    isAdmin.value = await esAdmin()
+    await cargarEstado()
 })
+
+async function cargarEstado() {
+    const usuario = await obtenerUsuarioActual()
+    logueado.value = !!usuario
+    rol.value = usuario?.rol || localStorage.getItem('role') || 'invitado'
+    isAdmin.value = await esAdmin()
+}
 
 const migas = [
     { texto: 'Inicio', ruta: '/' },
     { texto: 'Ajustes', ruta: null }
 ]
 
+function abrirLogin() {
+    mostrarLogin.value = true
+}
+
+function cerrarLogin() {
+    mostrarLogin.value = false
+}
+
+async function manejarLoginExitoso() {
+    mostrarLogin.value = false
+    await cargarEstado()  // Recargar el estado del usuario
+}
+
 function cambiarTema() {
+    document.body.classList.toggle('dark-theme')
 }
 
 function irACambiarEmail() {
@@ -33,43 +58,67 @@ function irAInvitar() {
 
 async function cerrarSesion() {
     await logout()
-    router.push('/login')
+    await cargarEstado()
+    router.push('/')
 }
 </script>
-
 <template>
     <div>
         <MigasDePan :items="migas" />
         <h2 class="titulo-seccion">Ajustes</h2>
+        <!-- Opciones de apariencia -->
         <div class="seccion">
             <h3>Opciones de apariencia</h3>
             <button @click="cambiarTema" class="boton-secundario">Cambiar tema</button>
         </div>
-        <div class="seccion">
+        <!-- USUARIO INVITADO -->
+        <div v-if="rol === 'invitado' || !logueado" class="seccion invitado">
             <h3>Opciones de cuenta</h3>
-            <div class="grupo-botones">
-                <button @click="irACambiarEmail" class="boton-opcion">Cambiar mi correo</button>
-                <button @click="irACambiarContrasena" class="boton-opcion">Cambiar mi contraseña</button>
+            <p class="mensaje-invitado">
+                Iniciá sesión para acceder a más opciones como cambiar tu email, contraseña y más.
+            </p>
+            <button @click="abrirLogin" class="boton-iniciar-sesion">
+                Iniciar sesión
+            </button>
+        </div>
+
+        <!-- USUARIO LOGUEADO -->
+        <template v-else>
+
+
+            <!-- Opciones de cuenta -->
+            <div class="seccion">
+                <h3>Opciones de cuenta</h3>
+                <div class="grupo-botones">
+                    <button @click="irACambiarEmail" class="boton-opcion">Cambiar mi correo</button>
+                    <button @click="irACambiarContrasena" class="boton-opcion">Cambiar mi contraseña</button>
+                </div>
             </div>
-        </div>
-        <div class="seccion" v-if="isAdmin">
-            <h3>Opciones de administrador</h3>
-            <div class="grupo-botones">
-                <button @click="irAInvitar" class="boton-opcion">Invitar colaborador</button>
+
+            <!-- Opciones de administrador -->
+            <div class="seccion" v-if="isAdmin">
+                <h3>Opciones de administrador</h3>
+                <div class="grupo-botones">
+                    <button @click="irAInvitar" class="boton-opcion">Invitar colaborador</button>
+                </div>
             </div>
-        </div>
-        <div class="accion-final">
-            <button @click="cerrarSesion" class="boton-cerrar">Cerrar sesión</button>
-        </div>
+
+            <div class="accion-final">
+                <button @click="cerrarSesion" class="boton-cerrar">Cerrar sesión</button>
+            </div>
+        </template>
     </div>
+
+    <IniciarSesionModal v-if="mostrarLogin" @close="cerrarLogin" @login-success="manejarLoginExitoso" />
 </template>
+
+
 
 <style scoped>
 .titulo-seccion {
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     color: var(--gris-oscuro, #2c3e50);
-    padding-left: 15px;
     text-align: center;
     font-weight: 600;
 }
@@ -87,7 +136,7 @@ async function cerrarSesion() {
     margin-top: 0;
     margin-bottom: 1rem;
     color: var(--gris-oscuro, #2c3e50);
-    font-size: 100;
+    font-size: 1.2rem;
     text-align: center;
 }
 
@@ -106,10 +155,12 @@ async function cerrarSesion() {
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
 .boton-opcion:hover {
-    background: var(--verde);
+    background: var(--verde, #2ecc71);
+    color: white;
 }
 
 .boton-secundario {
@@ -119,10 +170,39 @@ async function cerrarSesion() {
     border-radius: 30px;
     cursor: pointer;
     font-weight: 500;
+    transition: background 0.2s;
 }
 
 .boton-secundario:hover {
-    background: var(--verde);
+    background: var(--verde, #2ecc71);
+    color: white;
+}
+
+.invitado {
+    background: #f8fafc;
+    border: 2px dashed #cbd5e0;
+}
+
+.mensaje-invitado {
+    color: #4a5568;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.boton-iniciar-sesion {
+    background: var(--verde, #2ecc71);
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.boton-iniciar-sesion:hover {
+    background: var(--verde-oscuro, #27ae60);
 }
 
 .accion-final {
@@ -139,6 +219,7 @@ async function cerrarSesion() {
     font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
 .boton-cerrar:hover {

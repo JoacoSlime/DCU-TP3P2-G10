@@ -23,7 +23,7 @@ onMounted(async () => {
         <h3>Listado de puntos</h3>
         <ul>
             <li v-for="punto in puntos" :key="punto.id">
-                <router-link :to="`/punto/${punto.id}`">{{ punto.title }}</router-link>
+                <router-link :to="`/punto/${punto.id}`">{{ punto.nombre }}</router-link>
             </li>
         </ul>
     </div>

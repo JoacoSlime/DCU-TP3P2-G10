@@ -1,43 +1,36 @@
-import { API_URL } from '@/config'
-
-console.log('API_URL actual:', API_URL)
+import { API_URL, USAR_MOCKS } from '@/config'
+import { medicionesMock } from './mocks/medicionesMock.js'
+import {
+  adaptarListaMediciones,
+  adaptarMedicionFrontendToBackend,
+  adaptarMedicion,
+} from './adapter.js'
 
 export async function obtenerMedicionesPorPunto(puntoId) {
-  const res = await fetch(`${API_URL}/spots/measures?uuid=${puntoId}`)
-  if (!res.ok) throw new Error('Error al obtener mediciones')
-  const data = await res.json()
+  let data
 
-  // Transformar directamente las mediciones al formato que usa el frontend
-  return (data.data.measures || []).map((m) => ({
-    id: m.id,
-    puntoId: m.spot_id,
-    fecha: m.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
-    medicion: `${m.items_per_m2} items/m2`,
-    items_per_m2: m.items_per_m2,
-    colaborador: m.collaborator_id,
-  }))
+  if (USAR_MOCKS) {
+    const response = await medicionesMock.get(puntoId)
+    data = response.data.measures
+  } else {
+    const res = await fetch(`${API_URL}/spots/measures?uuid=${puntoId}`)
+    if (!res.ok) throw new Error('Error al obtener mediciones')
+    const response = await res.json()
+    data = response.data.measures
+  }
+
+  return adaptarListaMediciones(data || [])
 }
 
 export async function crearMedicion(puntoId, medicionData) {
-  const token = localStorage.getItem('auth_token')
+  const body = adaptarMedicionFrontendToBackend(medicionData, puntoId)
 
-  const body = {
-    spot_id: puntoId,
-    items_per_m2: '0.001',
-    weight: '0.001',
-    area: '0.001',
-    pet: 1,
-    pead: 1,
-    pebd: 0,
-    pvc: 0,
-    pp: 0,
-    ps: 0,
-    pa: 0,
-    other: 0,
-    ihr_plata: '0.001',
-    ibirp: '0.001',
+  if (USAR_MOCKS) {
+    const response = await medicionesMock.add(body)
+    return adaptarMedicion(response.data.measure)
   }
 
+  const token = localStorage.getItem('auth_token')
   const res = await fetch(`${API_URL}/measures/add`, {
     method: 'POST',
     headers: {
@@ -46,22 +39,22 @@ export async function crearMedicion(puntoId, medicionData) {
     },
     body: JSON.stringify(body),
   })
-
   const data = await res.json()
   if (!res.ok) throw new Error(data.message || 'Error al crear medición')
-  return data
+  return adaptarMedicion(data.data.measure)
 }
 
 export async function eliminarMedicion(id) {
-  const token = localStorage.getItem('auth_token')
+  if (USAR_MOCKS) {
+    const response = await medicionesMock.delete(id)
+    return response
+  }
 
+  const token = localStorage.getItem('auth_token')
   const res = await fetch(`${API_URL}/measures/delete?uuid=${id}`, {
     method: 'DELETE',
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   })
-
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Error al eliminar medición')
-
-  return { success: true, message: data.message || 'Medición eliminada' }
+  if (!res.ok) throw new Error('Error al eliminar medición')
+  return res.json()
 }

@@ -5,11 +5,24 @@ import MigasDePan from '@/components/MigasPan.vue'
 import { crearPunto } from '@/services/puntosService.js'
 
 const router = useRouter()
+
 const form = reactive({
     nombre: '',
     lat: 0,
     lng: 0,
-    medicion: ''
+    items_per_m2: 0,
+    weight: 0,
+    area: 0,
+    pet: 0,
+    pead: 0,
+    pebd: 0,
+    pvc: 0,
+    pp: 0,
+    ps: 0,
+    pa: 0,
+    other: 0,
+    ihr_plata: 0,
+    ibirp: 0
 })
 
 const migas = [
@@ -34,20 +47,87 @@ async function guardar() {
         <form @submit.prevent="guardar" class="formulario">
             <div class="campo">
                 <label>Nombre del punto *</label>
-                <input v-model="form.nombre" required placeholder="Ej: Nombre">
+                <input v-model="form.nombre" required placeholder="Ej: BER: BERNAL">
             </div>
+
             <div class="campo">
                 <label>Latitud *</label>
-                <input v-model.number="form.lat" type="number" step="any" required>
+                <input v-model.number="form.lat" type="number" step="any" required placeholder="-34.718">
             </div>
+
             <div class="campo">
                 <label>Longitud *</label>
-                <input v-model.number="form.lng" type="number" step="any" required>
+                <input v-model.number="form.lng" type="number" step="any" required placeholder="-58.285">
             </div>
+
+            <h3 class="subtitulo">Datos de medición</h3>
+
             <div class="campo">
-                <label>Medicion</label>
-                <textarea v-model="form.medicion" rows="3" placeholder="Medicion del punto..."></textarea>
+                <label>Items por m² *</label>
+                <input v-model.number="form.items_per_m2" type="number" step="0.01" required placeholder="Ej: 150.00">
             </div>
+
+            <div class="campo">
+                <label>Peso (kg) *</label>
+                <input v-model.number="form.weight" type="number" step="0.01" required placeholder="Ej: 73.50">
+            </div>
+
+            <div class="campo">
+                <label>Área (m²) *</label>
+                <input v-model.number="form.area" type="number" step="0.01" required placeholder="Ej: 5913253.00">
+            </div>
+
+            <h4 class="subtitulo">Tipos de residuos</h4>
+
+            <div class="row-campos">
+                <div class="campo">
+                    <label>PET</label>
+                    <input v-model.number="form.pet" type="number" min="0">
+                </div>
+                <div class="campo">
+                    <label>PEAD</label>
+                    <input v-model.number="form.pead" type="number" min="0">
+                </div>
+                <div class="campo">
+                    <label>PEBD</label>
+                    <input v-model.number="form.pebd" type="number" min="0">
+                </div>
+                <div class="campo">
+                    <label>PVC</label>
+                    <input v-model.number="form.pvc" type="number" min="0">
+                </div>
+            </div>
+
+            <div class="row-campos">
+                <div class="campo">
+                    <label>PP</label>
+                    <input v-model.number="form.pp" type="number" min="0">
+                </div>
+                <div class="campo">
+                    <label>PS</label>
+                    <input v-model.number="form.ps" type="number" min="0">
+                </div>
+                <div class="campo">
+                    <label>PA</label>
+                    <input v-model.number="form.pa" type="number" min="0">
+                </div>
+                <div class="campo">
+                    <label>Otros</label>
+                    <input v-model.number="form.other" type="number" min="0">
+                </div>
+            </div>
+
+            <div class="row-campos">
+                <div class="campo">
+                    <label>IHR Plata</label>
+                    <input v-model.number="form.ihr_plata" type="number" step="0.01" placeholder="0.00">
+                </div>
+                <div class="campo">
+                    <label>IBIRP</label>
+                    <input v-model.number="form.ibirp" type="number" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+
             <div class="acciones">
                 <button type="submit" class="boton">Guardar punto</button>
                 <button type="button" class="boton boton-cancelar" @click="$router.back()">Cancelar</button>
@@ -65,8 +145,16 @@ async function guardar() {
     font-weight: 600;
 }
 
+.subtitulo {
+    font-size: 1.2rem;
+    margin: 1.5rem 0 1rem 0;
+    color: var(--gris-oscuro, #2c3e50);
+    border-bottom: 2px solid var(--verde, #2ecc71);
+    padding-bottom: 0.5rem;
+}
+
 .formulario {
-    max-width: 600px;
+    max-width: 700px;
     margin: 0 auto;
     background: white;
     padding: 1.5rem;
@@ -75,19 +163,18 @@ async function guardar() {
 }
 
 .campo {
-    margin-bottom: 1.2rem;
+    margin-bottom: 1rem;
 }
 
 .campo label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
     font-weight: 600;
     color: #333;
+    font-size: 0.9rem;
 }
 
-.campo input,
-.campo textarea,
-.campo select {
+.campo input {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid #ccc;
@@ -96,12 +183,21 @@ async function guardar() {
     transition: border 0.2s;
 }
 
-.campo input:focus,
-.campo textarea:focus,
-.campo select:focus {
+.campo input:focus {
     outline: none;
     border-color: var(--verde, #2ecc71);
     box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
+}
+
+.row-campos {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0.8rem;
+}
+
+.row-campos .campo input {
+    padding: 8px 10px;
+    font-size: 0.9rem;
 }
 
 .acciones {
@@ -112,21 +208,32 @@ async function guardar() {
 }
 
 .boton {
-    background: #ecf0f1;
+    background: var(--verde, #2ecc71);
+    color: white;
     border: none;
-    padding: 10px 24px;
+    padding: 10px 28px;
     border-radius: 30px;
     font-size: 1rem;
+    font-weight: bold;
     cursor: pointer;
-
+    transition: background 0.2s;
 }
 
 .boton:hover {
-    background: var(--verde);
+    background: var(--verde-oscuro, #27ae60);
 }
 
+.boton-cancelar {
+    background: #95a5a6;
+}
 
 .boton-cancelar:hover {
-    background: #bdc3c7;
+    background: #7f8c8d;
+}
+
+@media (max-width: 600px) {
+    .row-campos {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 </style>
