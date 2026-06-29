@@ -1,2 +1,8 @@
-/target
+__pycache__/
+.ruff_cache
+.venv
+pyrightconfig.json
 .env
+flask_session/
+.DS_Store
+.idea
