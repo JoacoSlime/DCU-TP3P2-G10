@@ -117,6 +117,20 @@ export async function esAdmin() {
   return user?.rol?.name === 'administrator'
 }
 
+/**
+ * Devuelve si el usuario actual posee el permiso establecido (en vez de si tiene un rol)
+ * @param {string} permiso
+ * @returns {Promise<boolean>}
+ */
+export async function tienePermiso(permiso) {
+  const user = await obtenerUsuarioActual()
+  console.log(user)
+  if (user?.rol?.permissions?.some((permissionPair) => permissionPair.name === permiso)) {
+    return true
+  }
+  return false
+}
+
 export async function cambiarEmail(nuevoEmail, contraseñaActual) {
   if (USAR_MOCKS) return authMock.changeEmail(nuevoEmail) // TODO: Fix mocks
 
