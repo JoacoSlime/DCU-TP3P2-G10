@@ -33,7 +33,6 @@ class ProductionConfig(Config):
         ValueError("JWT_SECRET environment variable must be set")
     )
     SQLALCHEMY_ECHO = False
-    JWT_COOKIE_SECURE = True
     SECRET_KEY: str = environ.get("FLASK_SECRET_KEY") or (_ for _ in ()).throw(
         ValueError("FLASK_SECRET_KEY environment variable must be set")
     )
@@ -44,7 +43,6 @@ class DevelopmentConfig(Config):
     """Development environment configuration."""
 
     SQLALCHEMY_ENGINES = {"default": "sqlite:///default.sqlite"}
-    JWT_COOKIE_SECURE = False
 
 
 config: dict[str, Config] = {

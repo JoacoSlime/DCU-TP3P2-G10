@@ -4,8 +4,6 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import (
     create_access_token,  # pyright: ignore[reportUnknownVariableType]
     current_user,  # pyright: ignore[reportAny]
-    set_access_cookies,  # pyright: ignore[reportUnknownVariableType]
-    unset_jwt_cookies,
 )
 from flask_jwt_extended.view_decorators import (
     jwt_required,  # pyright: ignore[reportUnknownVariableType]
@@ -47,8 +45,6 @@ def login():
 
     response = jsonify(token=access_token)
 
-    set_access_cookies(response, access_token)
-
     return response
 
 
@@ -56,7 +52,5 @@ def login():
 @jwt_required()  # pyright: ignore[reportAny]
 def logout():
     response = jsonify(message="Sesión cerrada con éxito")
-
-    unset_jwt_cookies(response)
 
     return response
