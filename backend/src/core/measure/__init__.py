@@ -10,7 +10,7 @@ from src.core.user.user import User
 
 def add_measure(
     spot_id: int,
-    tems_per_m2: Decimal,
+    items_per_m2: Decimal,
     weight: Decimal,
     area: Decimal,
     pet: int,
@@ -39,7 +39,7 @@ def add_measure(
     measure = db.session.execute(
         insert(Measure)
         .values(
-            tems_per_m2=tems_per_m2,
+            items_per_m2=items_per_m2,
             weight=weight,
             area=area,
             pet=pet,
