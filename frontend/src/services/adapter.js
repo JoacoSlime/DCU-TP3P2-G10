@@ -1,6 +1,6 @@
 export function adaptarPunto(spot) {
   return {
-    id: spot.spot_id,
+    id: spot.id,
     nombre: spot.title,
     lat: parseFloat(spot.latitude),
     lng: parseFloat(spot.longitude),

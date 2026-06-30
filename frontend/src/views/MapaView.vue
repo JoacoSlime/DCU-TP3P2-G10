@@ -136,20 +136,11 @@ const manejarLoginExitoso = async () => {
   <div class="map-container">
     <div id="map"></div>
 
-    <ListCard
-      v-if="!showModal"
-      class="floating-list"
-      title="Puntos de Contaminación"
-      :items="puntosFiltrados"
-      @go-to="centrarMapa"
-    />
+    <ListCard v-if="!showModal" class="floating-list" title="Puntos de Contaminación" :items="puntosFiltrados"
+      @go-to="centrarMapa" />
 
     <Modal v-if="showModal" :show="true" @close="cerrarModal" />
-    <IniciarSesionModal
-      v-if="mostrarLogin"
-      @close="mostrarLogin = false"
-      @login-success="manejarLoginExitoso"
-    />
+    <IniciarSesionModal v-if="mostrarLogin" @close="mostrarLogin = false" @login-success="manejarLoginExitoso" />
   </div>
 </template>
 

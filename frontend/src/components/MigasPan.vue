@@ -25,7 +25,7 @@ defineProps({ items: { type: Array, required: true } })
 }
 
 .miga-enlace {
-    color: var(--verde, #2ecc71);
+    color: #007931;
     text-decoration: none;
     transition: color 0.2s;
 }

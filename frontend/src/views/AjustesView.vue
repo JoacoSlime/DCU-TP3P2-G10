@@ -113,11 +113,7 @@ async function cerrarSesion() {
     </template>
   </div>
 
-  <IniciarSesionModal
-    v-if="mostrarLogin"
-    @close="cerrarLogin"
-    @login-success="manejarLoginExitoso"
-  />
+  <IniciarSesionModal v-if="mostrarLogin" @close="cerrarLogin" @login-success="manejarLoginExitoso" />
 </template>
 
 <style scoped>
@@ -196,7 +192,7 @@ async function cerrarSesion() {
 }
 
 .boton-iniciar-sesion {
-  background: var(--verde, #2ecc71);
+  background: #008737;
   color: white;
   border: none;
   padding: 10px 30px;
@@ -217,7 +213,7 @@ async function cerrarSesion() {
 }
 
 .boton-cerrar {
-  background: #e74c3c;
+  background: #d04436;
   color: white;
   border: none;
   padding: 10px 24px;

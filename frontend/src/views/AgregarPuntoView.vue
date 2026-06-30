@@ -1,3 +1,106 @@
+<template>
+    <div>
+        <MigasDePan :items="migas" />
+        <h2 class="titulo-seccion">Agregar punto contaminado</h2>
+
+        <form @submit.prevent="guardar" class="formulario">
+            <!-- ===== DATOS BÁSICOS ===== -->
+            <div class="campo">
+                <label for="nombre">Nombre del punto *</label>
+                <input id="nombre" v-model="form.nombre" required placeholder="Ej: BER: BERNAL">
+            </div>
+
+            <div class="campo">
+                <label for="latitud">Latitud *</label>
+                <input id="latitud" v-model.number="form.lat" type="number" step="any" required placeholder="-34.718">
+            </div>
+
+            <div class="campo">
+                <label for="longitud">Longitud *</label>
+                <input id="longitud" v-model.number="form.lng" type="number" step="any" required placeholder="-58.285">
+            </div>
+
+            <!-- ===== DATOS DE MEDICIÓN ===== -->
+            <h3 class="subtitulo">Datos de medición</h3>
+
+            <div class="campo">
+                <label for="items_per_m2">Items por m² *</label>
+                <input id="items_per_m2" v-model.number="form.items_per_m2" type="number" step="0.01" required
+                    placeholder="Ej: 150.00">
+            </div>
+
+            <div class="campo">
+                <label for="weight">Peso (kg) *</label>
+                <input id="weight" v-model.number="form.weight" type="number" step="0.01" required
+                    placeholder="Ej: 73.50">
+            </div>
+
+            <div class="campo">
+                <label for="area">Área (m²) *</label>
+                <input id="area" v-model.number="form.area" type="number" step="0.01" required
+                    placeholder="Ej: 5913253.00">
+            </div>
+
+            <h4 class="subtitulo">Tipos de residuos</h4>
+
+            <div class="row-campos">
+                <div class="campo">
+                    <label for="pet">PET</label>
+                    <input id="pet" v-model.number="form.pet" type="number" min="0">
+                </div>
+                <div class="campo">
+                    <label for="pead">PEAD</label>
+                    <input id="pead" v-model.number="form.pead" type="number" min="0">
+                </div>
+                <div class="campo">
+                    <label for="pebd">PEBD</label>
+                    <input id="pebd" v-model.number="form.pebd" type="number" min="0">
+                </div>
+                <div class="campo">
+                    <label for="pvc">PVC</label>
+                    <input id="pvc" v-model.number="form.pvc" type="number" min="0">
+                </div>
+            </div>
+
+            <div class="row-campos">
+                <div class="campo">
+                    <label for="pp">PP</label>
+                    <input id="pp" v-model.number="form.pp" type="number" min="0">
+                </div>
+                <div class="campo">
+                    <label for="ps">PS</label>
+                    <input id="ps" v-model.number="form.ps" type="number" min="0">
+                </div>
+                <div class="campo">
+                    <label for="pa">PA</label>
+                    <input id="pa" v-model.number="form.pa" type="number" min="0">
+                </div>
+                <div class="campo">
+                    <label for="other">Otros</label>
+                    <input id="other" v-model.number="form.other" type="number" min="0">
+                </div>
+            </div>
+
+            <div class="row-campos">
+                <div class="campo">
+                    <label for="ihr_plata">IHR Plata</label>
+                    <input id="ihr_plata" v-model.number="form.ihr_plata" type="number" step="0.01" placeholder="0.00">
+                </div>
+                <div class="campo">
+                    <label for="ibirp">IBIRP</label>
+                    <input id="ibirp" v-model.number="form.ibirp" type="number" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+
+            <!-- ===== BOTONES ===== -->
+            <div class="acciones">
+                <button type="submit" class="boton">Guardar punto</button>
+                <button type="button" class="boton boton-cancelar" @click="$router.back()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</template>
+
 <script setup>
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
@@ -33,108 +136,12 @@ const migas = [
 async function guardar() {
     try {
         await crearPunto(form)
-        router.push('/')
+        router.push('/mapa')
     } catch (err) {
         alert('Error al guardar el punto: ' + err.message)
     }
 }
 </script>
-<template>
-    <div>
-        <MigasDePan :items="migas" />
-        <h2 class="titulo-seccion">Agregar punto contaminado</h2>
-
-        <form @submit.prevent="guardar" class="formulario">
-            <div class="campo">
-                <label>Nombre del punto *</label>
-                <input v-model="form.nombre" required placeholder="Ej: BER: BERNAL">
-            </div>
-
-            <div class="campo">
-                <label>Latitud *</label>
-                <input v-model.number="form.lat" type="number" step="any" required placeholder="-34.718">
-            </div>
-
-            <div class="campo">
-                <label>Longitud *</label>
-                <input v-model.number="form.lng" type="number" step="any" required placeholder="-58.285">
-            </div>
-
-            <h3 class="subtitulo">Datos de medición</h3>
-
-            <div class="campo">
-                <label>Items por m² *</label>
-                <input v-model.number="form.items_per_m2" type="number" step="0.01" required placeholder="Ej: 150.00">
-            </div>
-
-            <div class="campo">
-                <label>Peso (kg) *</label>
-                <input v-model.number="form.weight" type="number" step="0.01" required placeholder="Ej: 73.50">
-            </div>
-
-            <div class="campo">
-                <label>Área (m²) *</label>
-                <input v-model.number="form.area" type="number" step="0.01" required placeholder="Ej: 5913253.00">
-            </div>
-
-            <h4 class="subtitulo">Tipos de residuos</h4>
-
-            <div class="row-campos">
-                <div class="campo">
-                    <label>PET</label>
-                    <input v-model.number="form.pet" type="number" min="0">
-                </div>
-                <div class="campo">
-                    <label>PEAD</label>
-                    <input v-model.number="form.pead" type="number" min="0">
-                </div>
-                <div class="campo">
-                    <label>PEBD</label>
-                    <input v-model.number="form.pebd" type="number" min="0">
-                </div>
-                <div class="campo">
-                    <label>PVC</label>
-                    <input v-model.number="form.pvc" type="number" min="0">
-                </div>
-            </div>
-
-            <div class="row-campos">
-                <div class="campo">
-                    <label>PP</label>
-                    <input v-model.number="form.pp" type="number" min="0">
-                </div>
-                <div class="campo">
-                    <label>PS</label>
-                    <input v-model.number="form.ps" type="number" min="0">
-                </div>
-                <div class="campo">
-                    <label>PA</label>
-                    <input v-model.number="form.pa" type="number" min="0">
-                </div>
-                <div class="campo">
-                    <label>Otros</label>
-                    <input v-model.number="form.other" type="number" min="0">
-                </div>
-            </div>
-
-            <div class="row-campos">
-                <div class="campo">
-                    <label>IHR Plata</label>
-                    <input v-model.number="form.ihr_plata" type="number" step="0.01" placeholder="0.00">
-                </div>
-                <div class="campo">
-                    <label>IBIRP</label>
-                    <input v-model.number="form.ibirp" type="number" step="0.01" placeholder="0.00">
-                </div>
-            </div>
-
-            <div class="acciones">
-                <button type="submit" class="boton">Guardar punto</button>
-                <button type="button" class="boton boton-cancelar" @click="$router.back()">Cancelar</button>
-            </div>
-        </form>
-    </div>
-</template>
 
 <style scoped>
 .titulo-seccion {
@@ -184,9 +191,8 @@ async function guardar() {
 }
 
 .campo input:focus {
-    outline: none;
-    border-color: var(--verde, #2ecc71);
-    box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
+    outline: 2px solid #008737;
+    outline-offset: 2px;
 }
 
 .row-campos {
@@ -208,7 +214,7 @@ async function guardar() {
 }
 
 .boton {
-    background: var(--verde, #2ecc71);
+    background: #008737;
     color: white;
     border: none;
     padding: 10px 28px;
@@ -220,7 +226,7 @@ async function guardar() {
 }
 
 .boton:hover {
-    background: var(--verde-oscuro, #27ae60);
+    background: #006b2c;
 }
 
 .boton-cancelar {

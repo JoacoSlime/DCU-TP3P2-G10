@@ -66,20 +66,35 @@ export async function crearPunto(puntoData) {
 
 export async function eliminarPunto(id) {
   if (USAR_MOCKS) {
-    // TODO: Fix mocks
     const response = await puntosMock.delete(id)
     return response
   }
 
-  const token = (
-    await Preferences.get({
-      key: 'auth_token',
-    })
-  ).value
+  const token = (await Preferences.get({ key: 'auth_token' })).value
+  console.log('Token en eliminarPunto:', token ? token.substring(0, 20) + '...' : 'NO HAY TOKEN')
+
+  if (!token) {
+    throw new Error('No hay token de autenticación. Iniciá sesión nuevamente.')
+  }
+
+  console.log('Eliminando punto ID:', id)
+  console.log('URL:', `${API_URL}/spots/delete/${id}`)
+
   const res = await fetch(`${API_URL}/spots/delete/${id}`, {
     method: 'DELETE',
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
   })
-  if (!res.ok) throw new Error(data.message || 'Error al eliminar punto')
-  return res.json()
+
+  console.log('Status:', res.status)
+
+  const data = await res.json()
+  console.log('Data:', data)
+
+  if (!res.ok) {
+    throw new Error(data.message || data.msg || 'Error al eliminar punto')
+  }
+  return data
 }

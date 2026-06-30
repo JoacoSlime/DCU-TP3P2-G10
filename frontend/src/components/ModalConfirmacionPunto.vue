@@ -76,12 +76,12 @@ function cancelar() {
 }
 
 .boton-cancelar {
-    background: #95a5a6;
+    background: #6b7777;
     color: white;
 }
 
 .boton-eliminar {
-    background: #e74c3c;
+    background: #d04436;
     color: white;
 }
 

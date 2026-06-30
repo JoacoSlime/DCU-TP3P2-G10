@@ -141,7 +141,7 @@ const volverAlPaso1 = () => {
 }
 
 .modal-subtitle {
-  color: #718096;
+  color: #657286;
   font-size: 0.95rem;
   margin-bottom: 1.5rem;
 }
