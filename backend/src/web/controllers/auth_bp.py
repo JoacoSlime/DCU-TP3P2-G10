@@ -9,6 +9,7 @@ from flask_jwt_extended.view_decorators import (
     jwt_required,  # pyright: ignore[reportUnknownVariableType]
 )
 
+from src.core.schemas import user_schema
 from src.core.user import check_auth
 from src.core.validations.auth_validation import LoginForm
 
@@ -18,13 +19,7 @@ auth_bp = Blueprint("auth_bp", __name__, url_prefix="/api/auth")
 @auth_bp.route("/me", methods=["GET"])  # pyright: ignore[reportAny]
 @jwt_required()  # pyright: ignore[reportAny]
 def me():
-    return jsonify(
-        id=current_user.id,  # pyright: ignore[reportAny]
-        email=current_user.email,  # pyright: ignore[reportAny]
-        name=current_user.name,  # pyright: ignore[reportAny]
-        surname=current_user.surname,  # pyright: ignore[reportAny]
-        role=current_user.role,
-    )
+    return jsonify(user_schema.dump(current_user))
 
 
 @auth_bp.route("/login", methods=["POST"])
