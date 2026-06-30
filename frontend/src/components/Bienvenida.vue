@@ -1,5 +1,5 @@
 <script setup>
-import { defineEmits, ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Boton from './Boton.vue'
 import UserCard from './UserCard.vue'

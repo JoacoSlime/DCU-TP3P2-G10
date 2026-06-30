@@ -107,6 +107,7 @@ function ayuda() {
     font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
+    z-index: 9999999; 
 }
 
 .boton-ayuda-flotante:hover {
