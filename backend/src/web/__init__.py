@@ -56,7 +56,7 @@ def create_app(env: str = "production") -> Flask:
     ]
     public_url = environ.get("URL_BASE_PUBLIC_APP")
     if public_url:
-        origins += public_url
+        origins.append(public_url.strip())
     cors.init_app(
         app,
         origins=origins,

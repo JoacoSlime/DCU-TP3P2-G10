@@ -14,7 +14,7 @@ from flask_jwt_extended.view_decorators import (
 from src.core.user import check_auth
 from src.core.validations.auth_validation import LoginForm
 
-auth_bp = Blueprint("auth_bp", __name__, url_prefix="/auth")
+auth_bp = Blueprint("auth_bp", __name__, url_prefix="/api/auth")
 
 
 @auth_bp.route("/me", methods=["GET"])  # pyright: ignore[reportAny]
