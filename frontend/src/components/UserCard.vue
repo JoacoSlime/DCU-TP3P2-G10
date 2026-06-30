@@ -1,3 +1,15 @@
+<script setup>
+import Boton from './Boton.vue'
+
+defineProps({
+  title: String,
+  description: Array,
+  buttonLabel: String,
+  variant: String
+})
+
+defineEmits(['select'])
+</script>
 <template>
   <div class="user-card">
     <h3 class="card-title">{{ title }}</h3>
@@ -8,19 +20,6 @@
   </div>
 </template>
 
-<script setup>
-import Boton from './Boton.vue'
-
-defineProps({
-  title: String,
-  description: Array,
-  buttonLabel: String,
-  variant: String,
-})
-
-defineEmits(['select'])
-</script>
-
 <style scoped>
 .user-card {
   background: #d1d5db;
@@ -30,6 +29,8 @@ defineEmits(['select'])
   flex-direction: column;
   align-items: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  min-height: 400px;
   width: 405px;
 }
 
