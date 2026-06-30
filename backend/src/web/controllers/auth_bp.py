@@ -60,6 +60,6 @@ def refresh():
 @auth_bp.route("/logout", methods=["GET"])  # pyright: ignore[reportAny]
 @jwt_required()  # pyright: ignore[reportAny]
 def logout():
-    response = jsonify(message="Sesión cerrada con éxito")
+    response = jsonify(message="TODO: No se implementó aún un invalidador de tokens")
 
     return response
