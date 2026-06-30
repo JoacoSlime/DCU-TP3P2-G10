@@ -3,11 +3,12 @@ import { authMock } from './mocks/authMock.js'
 import { adaptarUsuario } from './adapter.js'
 
 export async function login(email, password) {
-  let data
+  let token
 
   if (USAR_MOCKS) {
+    // TODO: Fix mocks
     const response = await authMock.login(email, password)
-    data = response.data
+    token = response.token
   } else {
     const res = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
@@ -16,32 +17,32 @@ export async function login(email, password) {
     })
     const response = await res.json()
     if (!res.ok) throw new Error(response.message || 'Credenciales inválidas')
-    data = response.data
+    token = response.token
   }
 
-  if (data?.token) {
-    localStorage.setItem('auth_token', data.token)
-  }
-  if (data?.user) {
-    localStorage.setItem('usuario', JSON.stringify(adaptarUsuario(data.user)))
+  if (token) {
+    localStorage.setItem('auth_token', token)
   }
 
-  return data
+  return token
 }
 
 export async function logout() {
-  if (USAR_MOCKS) return authMock.logout()
+  if (USAR_MOCKS) return authMock.logout() // TODO: Fix mocks
 
   const token = localStorage.getItem('auth_token')
   if (token) {
-    try {
-      await fetch(`${API_URL}/auth/logout`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
-      })
-    } catch (e) {}
+    //  El endpoint existe, pero no hace nada
+    //
+    // try {
+    //   await fetch(`${API_URL}/auth/logout`, {
+    //     method: 'GET',
+    //     headers: { Authorization: `Bearer ${token}` },
+    //   })
+    // } catch (e) {}
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('usuario')
   }
-  localStorage.clear()
   return { status: 'success', message: 'logged out' }
 }
 
@@ -52,6 +53,7 @@ export async function obtenerUsuarioActual() {
   let user
 
   if (USAR_MOCKS) {
+    // TODO: Fix mocks
     try {
       const response = await authMock.me()
       user = response.data.user
@@ -66,8 +68,7 @@ export async function obtenerUsuarioActual() {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) return null
-      const response = await res.json()
-      user = response.data?.user || response.data
+      user = await res.json()
     } catch {
       return null
     }
@@ -84,14 +85,14 @@ export async function obtenerUsuarioActual() {
 
 export async function esAdmin() {
   const user = await obtenerUsuarioActual()
-  return user?.rol === 'admin'
+  return user?.rol?.name === 'administrator'
 }
 
 export async function cambiarEmail(nuevoEmail, contraseñaActual) {
-  if (USAR_MOCKS) return authMock.changeEmail(nuevoEmail)
+  if (USAR_MOCKS) return authMock.changeEmail(nuevoEmail) // TODO: Fix mocks
 
   const token = localStorage.getItem('auth_token')
-  const res = await fetch(`${API_URL}/collaborators/change_email`, {
+  const res = await fetch(`${API_URL}/users/change_email`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -99,15 +100,15 @@ export async function cambiarEmail(nuevoEmail, contraseñaActual) {
     },
     body: JSON.stringify({ email: nuevoEmail }),
   })
-  if (!res.ok) throw new Error('Error al cambiar email')
+  if (!res.ok) throw new Error(data.message || 'Error al cambiar email')
   return res.json()
 }
 
 export async function cambiarContraseña(contraseñaActual, nuevaContraseña) {
-  if (USAR_MOCKS) return authMock.changePassword(contraseñaActual, nuevaContraseña)
+  if (USAR_MOCKS) return authMock.changePassword(contraseñaActual, nuevaContraseña) // TODO: Fix mocks
 
   const token = localStorage.getItem('auth_token')
-  const res = await fetch(`${API_URL}/collaborators/change_password`, {
+  const res = await fetch(`${API_URL}/users/change_password`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -115,15 +116,15 @@ export async function cambiarContraseña(contraseñaActual, nuevaContraseña) {
     },
     body: JSON.stringify({ old_password: contraseñaActual, new_password: nuevaContraseña }),
   })
-  if (!res.ok) throw new Error('Error al cambiar contraseña')
+  if (!res.ok) throw new Error(data.message || 'Error al cambiar contraseña')
   return res.json()
 }
 
 export async function invitarColaborador(email) {
-  if (USAR_MOCKS) return authMock.registerCollaborator(email)
+  if (USAR_MOCKS) return authMock.registerCollaborator(email) // TODO: Fix mocks
 
   const token = localStorage.getItem('auth_token')
-  const res = await fetch(`${API_URL}/collaborators/register`, {
+  const res = await fetch(`${API_URL}/users/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -131,18 +132,18 @@ export async function invitarColaborador(email) {
     },
     body: JSON.stringify({ email }),
   })
-  if (!res.ok) throw new Error('Error al invitar colaborador')
+  if (!res.ok) throw new Error(data.message || 'Error al invitar colaborador')
   return res.json()
 }
 
 export async function registrarContraseña(tokenInvite, name, surname, password) {
-  if (USAR_MOCKS) return authMock.createPassword(tokenInvite, name, surname, password)
+  if (USAR_MOCKS) return authMock.createPassword(tokenInvite, name, surname, password) // TODO: Fix mocks
 
-  const res = await fetch(`${API_URL}/collaborators/create_password`, {
+  const res = await fetch(`${API_URL}/users/create_password`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token: tokenInvite, name, surname, password }),
   })
-  if (!res.ok) throw new Error('Error al registrar contraseña')
+  if (!res.ok) throw new Error(data.message || 'Error al registrar contraseña')
   return res.json()
 }

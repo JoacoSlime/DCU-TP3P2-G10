@@ -10,13 +10,14 @@ export async function obtenerMedicionesPorPunto(puntoId) {
   let data
 
   if (USAR_MOCKS) {
+    // TODO: Fix mocks
     const response = await medicionesMock.get(puntoId)
     data = response.data.measures
   } else {
-    const res = await fetch(`${API_URL}/spots/measures?uuid=${puntoId}`)
-    if (!res.ok) throw new Error('Error al obtener mediciones')
+    const res = await fetch(`${API_URL}/spots/measures/${puntoId}`)
+    if (!res.ok) throw new Error(data.message || 'Error al obtener mediciones')
     const response = await res.json()
-    data = response.data.measures
+    data = response
   }
 
   return adaptarListaMediciones(data || [])
@@ -26,6 +27,7 @@ export async function crearMedicion(puntoId, medicionData) {
   const body = adaptarMedicionFrontendToBackend(medicionData, puntoId)
 
   if (USAR_MOCKS) {
+    // TODO: Fix mocks
     const response = await medicionesMock.add(body)
     return adaptarMedicion(response.data.measure)
   }
@@ -41,20 +43,21 @@ export async function crearMedicion(puntoId, medicionData) {
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.message || 'Error al crear medición')
-  return adaptarMedicion(data.data.measure)
+  return adaptarMedicion(data)
 }
 
 export async function eliminarMedicion(id) {
   if (USAR_MOCKS) {
+    // TODO: Fix mocks
     const response = await medicionesMock.delete(id)
     return response
   }
 
   const token = localStorage.getItem('auth_token')
-  const res = await fetch(`${API_URL}/measures/delete?uuid=${id}`, {
+  const res = await fetch(`${API_URL}/measures/delete/${id}`, {
     method: 'DELETE',
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   })
-  if (!res.ok) throw new Error('Error al eliminar medición')
+  if (!res.ok) throw new Error(data.message || 'Error al eliminar medición')
   return res.json()
 }
