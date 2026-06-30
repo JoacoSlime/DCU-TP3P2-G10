@@ -6,26 +6,20 @@ from wtforms import DecimalField, IntegerField, validators
 
 @final
 class AddMeasureForm(FlaskForm):
-    spot_id = IntegerField(
-        None, [validators.InputRequired(), validators.NumberRange(0)]
-    )
+    spot_id = IntegerField(None, [validators.NumberRange(0)])
 
-    items_per_m2 = DecimalField(
-        None, [validators.InputRequired(), validators.NumberRange(0)]
-    )
-    weight = DecimalField(None, [validators.InputRequired(), validators.NumberRange(0)])
-    area = DecimalField(None, [validators.InputRequired(), validators.NumberRange(0)])
+    items_per_m2 = DecimalField(None, [validators.NumberRange(0)])
+    weight = DecimalField(None, [validators.NumberRange(0)])
+    area = DecimalField(None, [validators.NumberRange(0)])
 
-    pet = IntegerField(None, [validators.InputRequired(), validators.NumberRange(0)])
-    pead = IntegerField(None, [validators.InputRequired(), validators.NumberRange(0)])
-    pebd = IntegerField(None, [validators.InputRequired(), validators.NumberRange(0)])
-    pvc = IntegerField(None, [validators.InputRequired(), validators.NumberRange(0)])
-    pp = IntegerField(None, [validators.InputRequired(), validators.NumberRange(0)])
-    ps = IntegerField(None, [validators.InputRequired(), validators.NumberRange(0)])
-    pa = IntegerField(None, [validators.InputRequired(), validators.NumberRange(0)])
-    other = IntegerField(None, [validators.InputRequired(), validators.NumberRange(0)])
+    pet = IntegerField(None, [validators.NumberRange(0)])
+    pead = IntegerField(None, [validators.NumberRange(0)])
+    pebd = IntegerField(None, [validators.NumberRange(0)])
+    pvc = IntegerField(None, [validators.NumberRange(0)])
+    pp = IntegerField(None, [validators.NumberRange(0)])
+    ps = IntegerField(None, [validators.NumberRange(0)])
+    pa = IntegerField(None, [validators.NumberRange(0)])
+    other = IntegerField(None, [validators.NumberRange(0)])
 
-    ihr_plata = DecimalField(
-        None, [validators.InputRequired(), validators.NumberRange(0)]
-    )
-    ibirp = DecimalField(None, [validators.InputRequired(), validators.NumberRange(0)])
+    ihr_plata = DecimalField(None, [validators.NumberRange(0)])
+    ibirp = DecimalField(None, [validators.NumberRange(0)])
