@@ -1,3 +1,2 @@
-export const API_URL = '/api'
-// CAMBIAR A false PARA USAR LA API
-export const USAR_MOCKS = true
+export const API_URL = import.meta.env.VITE_API_URL || '/api'
+export const USAR_MOCKS = import.meta.env.VITE_USAR_MOCKS === 'true' || false

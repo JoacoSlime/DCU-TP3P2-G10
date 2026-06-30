@@ -5,9 +5,7 @@ import wtforms_json  # pyright: ignore[reportMissingTypeStubs]
 from flask import Flask, jsonify
 
 from src.core import cors, db, jwt, seeds
-from src.core.csrf import csrf
 from src.web.controllers.auth_bp import auth_bp
-from src.web.controllers.csrf_bp import csrf_bp
 from src.web.controllers.measures_bp import measures_bp
 from src.web.controllers.spots_bp import spots_bp
 from src.web.controllers.users_bp import users_bp
@@ -21,7 +19,6 @@ def create_app(env: str = "production") -> Flask:
 
     app.config.from_object(config[env])
 
-    csrf.init_app(app)  # pyright: ignore[reportUnknownMemberType]
     db.init_app(app)
     jwt.init_app(app)
 
@@ -32,9 +29,6 @@ def create_app(env: str = "production") -> Flask:
     def healthcheck():  # pyright: ignore[reportUnusedFunction]
         response = jsonify({"status": "success", "message": "ContaminApp - Grupo10"})
         return response
-
-    # CSRF token API
-    app.register_blueprint(csrf_bp)
 
     # Auth API
     app.register_blueprint(auth_bp)

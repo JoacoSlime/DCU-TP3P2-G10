@@ -11,7 +11,7 @@ class Config(object):
     """Base configuration."""
 
     JWT_SECRET_KEY: str = secrets.token_hex(32)
-    JWT_TOKEN_LOCATION: list[str] = ["headers", "cookies"]
+    JWT_TOKEN_LOCATION: list[str] = ["headers"]
     SQLALCHEMY_ECHO: bool = True
     RESEND_KEY: str = environ.get("RESEND_KEY") or (_ for _ in ()).throw(
         ValueError("RESEND_KEY environment variable must be set")
