@@ -52,10 +52,10 @@ def add_measure(
             other=other,
             ihr_plata=ihr_plata,
             ibirp=ibirp,
-            spot=spot,
         )
         .returning(Measure)
     ).scalar_one()
+    measure.spot = spot
     measure.collaborator = collaborator
     db.session.commit()
 
