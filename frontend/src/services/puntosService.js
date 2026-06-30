@@ -60,7 +60,7 @@ export async function crearPunto(puntoData) {
     body: JSON.stringify(body),
   })
   const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Error al crear punto')
+  if (!res.ok) throw new Error(JSON.stringify(data.message) || 'Error al crear punto')
   return adaptarPunto(data)
 }
 
