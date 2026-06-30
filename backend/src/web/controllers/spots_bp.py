@@ -18,7 +18,7 @@ def get(spot_id: int):
     spot = get_spot(spot_id)
 
     if not spot:
-        return jsonify("Punto no encontrado"), 404
+        return jsonify(message="Punto no encontrado"), 404
 
     return jsonify(spot_schema.dump(spot))
 
@@ -49,7 +49,7 @@ def measures(spot_id: int):
     spot = get_spot(spot_id)
 
     if not spot:
-        return jsonify("Punto no encontrado"), 404
+        return jsonify(message="Punto no encontrado"), 404
 
     return jsonify(measures_schema.dump(spot.measures))
 

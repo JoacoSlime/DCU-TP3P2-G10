@@ -129,7 +129,7 @@ def change_email():
     result = change_user_email(user.id, form.email.data)  # pyright: ignore[reportArgumentType].
 
     if not result:
-        return jsonify("Error al obtener el usuario"), 500
+        return jsonify(message="Error al obtener el usuario"), 500
 
     return jsonify(message="Email actualizado correctamente", email=result.email)
 
@@ -151,9 +151,9 @@ def change_password():
 
     if not result["success"]:
         if result["reason"] == "incorrect_password":
-            return jsonify("La contraseña actual no coincide"), 400
+            return jsonify(message="La contraseña actual no coincide"), 400
         if result["reason"] == "user_not_found":
-            return jsonify("Error al obtener el usuario"), 500
+            return jsonify(message="Error al obtener el usuario"), 500
 
     return jsonify(message="Contraseña actualizada correctamente")
 
