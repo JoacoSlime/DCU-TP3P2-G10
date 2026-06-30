@@ -17,6 +17,7 @@ class Config(object):
         ValueError("RESEND_KEY environment variable must be set")
     )
     SECRET_KEY: str = secrets.token_hex()
+    WTF_CSRF_CHECK_DEFAULT: bool = False
 
 
 @final
