@@ -102,6 +102,6 @@ export function adaptarUsuario(user) {
     email: user.email,
     nombre: user.name || '',
     apellido: user.surname || '',
-    rol: user.rol || user.role || 'colaborador',
+    rol: user.rol || user.role || {},
   }
 }
