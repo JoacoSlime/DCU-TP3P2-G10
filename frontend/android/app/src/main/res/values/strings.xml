@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">contaminapp</string>
-    <string name="title_activity_main">contaminapp</string>
+    <string name="app_name">ContaminApp</string>
+    <string name="title_activity_main">ContaminApp</string>
     <string name="package_name">com.example.grupo10</string>
     <string name="custom_url_scheme">com.example.grupo10</string>
 </resources>
