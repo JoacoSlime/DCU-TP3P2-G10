@@ -44,7 +44,7 @@ def create_app(env: str = "production") -> Flask:
 
     # Start CORS
     origins = [
-        "http://localhost",
+        "https://localhost",  # Thanks capacitor.
         "http://localhost:5173",
         "http://localhost:8080",
         "http://localhost:5000",
