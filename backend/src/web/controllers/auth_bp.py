@@ -23,6 +23,7 @@ def me():
         email=current_user.email,  # pyright: ignore[reportAny]
         name=current_user.name,  # pyright: ignore[reportAny]
         surname=current_user.surname,  # pyright: ignore[reportAny]
+        role=current_user.role,
     )
 
 
