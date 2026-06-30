@@ -1,11 +1,25 @@
 from marshmallow import Schema, fields
 
 
+class PermissionSchema(Schema):
+    id: fields.Int = fields.Int()
+    name: fields.Str = fields.Str()
+
+
+class RoleSchema(Schema):
+    id: fields.Int = fields.Int()
+    name: fields.Str = fields.Str()
+
+    # Nested permissions list
+    permissions: fields.Nested = fields.Nested(PermissionSchema, many=True)
+
+
 class UserSchema(Schema):
     id: fields.Int = fields.Int()
     email: fields.Email = fields.Email()
     name: fields.Str = fields.Str(allow_none=True)
     surname: fields.Str = fields.Str(allow_none=True)
+    role: fields.Nested = fields.Nested(RoleSchema)
 
 
 class MeasureSchema(Schema):
@@ -38,19 +52,6 @@ class SpotSchema(Schema):
 
     # Nested measures list
     measures: fields.Nested = fields.Nested(MeasureSchema, many=True)
-
-
-class PermissionSchema(Schema):
-    id: fields.Int = fields.Int()
-    name: fields.Str = fields.Str()
-
-
-class RoleSchema(Schema):
-    id: fields.Int = fields.Int()
-    name: fields.Str = fields.Str()
-
-    # Nested permissions list
-    permissions: fields.Nested = fields.Nested(PermissionSchema, many=True)
 
 
 # Schema instances
