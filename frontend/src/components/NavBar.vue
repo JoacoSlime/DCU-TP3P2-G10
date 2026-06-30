@@ -1,77 +1,61 @@
 <script setup>
-import { useRouter, useRoute} from 'vue-router'
+import { Preferences } from '@capacitor/preferences'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
-const route = useRoute();
+const route = useRoute()
 
 const irAlInicio = () => {
-  router.push('/') 
+  router.push('/')
 }
 
 const irAtras = () => {
-  router.back();
-};
+  router.back()
+}
 
 const irAListadoPuntos = () => {
-  router.push('/listado-puntos');
-};
-
+  router.push('/listado-puntos')
+}
 
 const irALogin = () => {
-  router.push('/login');
-};
+  router.push('/login')
+}
 
-const irALogout = () => {
-  localStorage.removeItem('logged')
-  localStorage.removeItem('role')
+const irALogout = async () => {
+  await Preferences.remove({
+    key: 'logged',
+  })
+  await Preferences.remove({
+    key: 'role',
+  })
   router.push('/')
   window.location.reload()
   console.log('cierro sesion')
-};
-
+}
 </script>
 
 <template>
   <header class="navbar">
-   <img src="/logoapp.png" 
-   alt="Logo ContaminApp" 
-   class="logo" 
-   @click="irAlInicio" />
+    <img src="/logoapp.png" alt="Logo ContaminApp" class="logo" @click="irAlInicio" />
 
-   <button 
-      v-if="route.path !== '/'" 
-      class="nav-option" 
-      @click="irAtras"
-    >
-      ← Volver
-    </button>
+    <button v-if="route.path !== '/'" class="nav-option" @click="irAtras">← Volver</button>
 
-     <button 
-      id="b-listaP"
-      class="nav-option push-right" 
-      @click="irAListadoPuntos"
-    >
+    <button id="b-listaP" class="nav-option push-right" @click="irAListadoPuntos">
       Listado de puntos
     </button>
 
-    <button 
-      id="b-login"
-      v-if="route.path == '/'" 
-      class="nav-option push-right" 
-      @click="irALogin"
-    >
+    <button id="b-login" v-if="route.path == '/'" class="nav-option push-right" @click="irALogin">
       Iniciar Sesión
     </button>
 
-    <button 
+    <button
       id="b-logout"
-      v-if="route.path == '/admin/mapa'" 
-      class="nav-option push-right" 
+      v-if="route.path == '/admin/mapa'"
+      class="nav-option push-right"
       @click="irALogout"
     >
       Cerrar Sesión
     </button>
-    
   </header>
 </template>
 
@@ -83,21 +67,21 @@ const irALogout = () => {
   padding: 0 20px;
   display: flex;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  position: sticky; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
   top: 0;
   z-index: 1000;
 }
 
 .logo {
   height: 40px;
-  cursor: pointer; 
+  cursor: pointer;
   transition: opacity 0.2s;
   border-radius: 40px;
 }
 
 .logo:hover {
-  opacity: 0.8; 
+  opacity: 0.8;
 }
 
 .nav-option {
@@ -119,8 +103,8 @@ const irALogout = () => {
 }
 
 .nav-option:hover {
-  background-color: #f1f5f9; 
-  color: #179299; 
+  background-color: #f1f5f9;
+  color: #179299;
 }
 
 .push-right {

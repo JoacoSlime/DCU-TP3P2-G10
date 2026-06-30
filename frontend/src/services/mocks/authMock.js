@@ -1,3 +1,5 @@
+import { Preferences } from '@capacitor/preferences'
+
 let usuarios = [
   {
     id: 'f1e2d3c4-b5a6-9780-1234-567890abcdef',
@@ -35,10 +37,22 @@ export const authMock = {
 
     const { password: _, ...usuarioSinPass } = usuario
     usuarioActual = usuarioSinPass
-    localStorage.setItem('usuario', JSON.stringify(usuarioSinPass))
-    localStorage.setItem('auth_token', 'mock-token-123')
-    localStorage.setItem('logged', 'true')
-    localStorage.setItem('role', usuario.rol)
+    await Preferences.set({
+      key: 'usuario',
+      value: JSON.stringify(usuarioSinPass),
+    })
+    await Preferences.set({
+      key: 'auth_token',
+      value: 'mock-token-123',
+    })
+    await Preferences.set({
+      key: 'logged',
+      value: 'true',
+    })
+    await Preferences.set({
+      key: 'role',
+      value: usuario.rol,
+    })
     return {
       status: 'success',
       data: {
@@ -50,7 +64,11 @@ export const authMock = {
 
   async me() {
     if (!usuarioActual) {
-      const stored = localStorage.getItem('usuario')
+      const stored = (
+        await Preferences.get({
+          key: 'usuario',
+        })
+      ).value
       if (stored) {
         usuarioActual = JSON.parse(stored)
       } else {
@@ -65,7 +83,18 @@ export const authMock = {
 
   async logout() {
     usuarioActual = null
-    localStorage.clear()
+    await Preferences.remove({
+      key: 'usuario',
+    })
+    await Preferences.remove({
+      key: 'auth_token',
+    })
+    await Preferences.remove({
+      key: 'logged',
+    })
+    await Preferences.remove({
+      key: 'role',
+    })
     return { status: 'success', message: 'logged out' }
   },
 

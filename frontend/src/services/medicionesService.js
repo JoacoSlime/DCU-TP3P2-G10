@@ -5,6 +5,7 @@ import {
   adaptarMedicionFrontendToBackend,
   adaptarMedicion,
 } from './adapter.js'
+import { Preferences } from '@capacitor/preferences'
 
 export async function obtenerMedicionesPorPunto(puntoId) {
   let data
@@ -32,7 +33,11 @@ export async function crearMedicion(puntoId, medicionData) {
     return adaptarMedicion(response.data.measure)
   }
 
-  const token = localStorage.getItem('auth_token')
+  const token = (
+    await Preferences.get({
+      key: 'auth_token',
+    })
+  ).value
   const res = await fetch(`${API_URL}/measures/add`, {
     method: 'POST',
     headers: {
@@ -53,7 +58,11 @@ export async function eliminarMedicion(id) {
     return response
   }
 
-  const token = localStorage.getItem('auth_token')
+  const token = (
+    await Preferences.get({
+      key: 'auth_token',
+    })
+  ).value
   const res = await fetch(`${API_URL}/measures/delete/${id}`, {
     method: 'DELETE',
     headers: token ? { Authorization: `Bearer ${token}` } : {},

@@ -1,6 +1,7 @@
 import { API_URL, USAR_MOCKS } from '@/config'
 import { puntosMock } from './mocks/puntosMock.js'
 import { adaptarListaPuntos, adaptarPuntoFrontendToBackend, adaptarPunto } from './adapter.js'
+import { Preferences } from '@capacitor/preferences'
 
 export async function obtenerPuntos(page = 1) {
   let data
@@ -45,7 +46,11 @@ export async function crearPunto(puntoData) {
     return adaptarPunto(response.data.spot)
   }
 
-  const token = localStorage.getItem('auth_token')
+  const token = (
+    await Preferences.get({
+      key: 'auth_token',
+    })
+  ).value
   const res = await fetch(`${API_URL}/spots/add`, {
     method: 'POST',
     headers: {
@@ -66,7 +71,11 @@ export async function eliminarPunto(id) {
     return response
   }
 
-  const token = localStorage.getItem('auth_token')
+  const token = (
+    await Preferences.get({
+      key: 'auth_token',
+    })
+  ).value
   const res = await fetch(`${API_URL}/spots/delete/${id}`, {
     method: 'DELETE',
     headers: token ? { Authorization: `Bearer ${token}` } : {},

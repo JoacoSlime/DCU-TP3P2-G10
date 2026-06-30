@@ -1,6 +1,7 @@
 import { API_URL, USAR_MOCKS } from '@/config'
 import { authMock } from './mocks/authMock.js'
 import { adaptarUsuario } from './adapter.js'
+import { Preferences } from '@capacitor/preferences'
 
 export async function login(email, password) {
   let token
@@ -21,7 +22,10 @@ export async function login(email, password) {
   }
 
   if (token) {
-    localStorage.setItem('auth_token', token)
+    await Preferences.set({
+      key: 'auth_token',
+      value: token,
+    })
   }
 
   return token
@@ -30,7 +34,11 @@ export async function login(email, password) {
 export async function logout() {
   if (USAR_MOCKS) return authMock.logout() // TODO: Fix mocks
 
-  const token = localStorage.getItem('auth_token')
+  const token = (
+    await Preferences.get({
+      key: 'auth_token',
+    })
+  ).value
   if (token) {
     //  El endpoint existe, pero no hace nada
     //
@@ -40,14 +48,28 @@ export async function logout() {
     //     headers: { Authorization: `Bearer ${token}` },
     //   })
     // } catch (e) {}
-    localStorage.removeItem('auth_token')
-    localStorage.removeItem('usuario')
+    await Preferences.remove({
+      key: 'usuario',
+    })
+    await Preferences.remove({
+      key: 'auth_token',
+    })
+    await Preferences.remove({
+      key: 'logged',
+    })
+    await Preferences.remove({
+      key: 'role',
+    })
   }
   return { status: 'success', message: 'logged out' }
 }
 
 export async function obtenerUsuarioActual() {
-  const stored = localStorage.getItem('usuario')
+  const stored = (
+    await Preferences.get({
+      key: 'usuario',
+    })
+  ).value
   if (stored) return JSON.parse(stored)
 
   let user
@@ -61,7 +83,11 @@ export async function obtenerUsuarioActual() {
       return null
     }
   } else {
-    const token = localStorage.getItem('auth_token')
+    const token = (
+      await Preferences.get({
+        key: 'auth_token',
+      })
+    ).value
     if (!token) return null
     try {
       const res = await fetch(`${API_URL}/auth/me`, {
@@ -76,7 +102,10 @@ export async function obtenerUsuarioActual() {
 
   if (user) {
     const usuarioAdaptado = adaptarUsuario(user)
-    localStorage.setItem('usuario', JSON.stringify(usuarioAdaptado))
+    await Preferences.set({
+      key: 'usuario',
+      value: JSON.stringify(usuarioAdaptado),
+    })
     return usuarioAdaptado
   }
 
@@ -91,7 +120,11 @@ export async function esAdmin() {
 export async function cambiarEmail(nuevoEmail, contraseñaActual) {
   if (USAR_MOCKS) return authMock.changeEmail(nuevoEmail) // TODO: Fix mocks
 
-  const token = localStorage.getItem('auth_token')
+  const token = (
+    await Preferences.get({
+      key: 'auth_token',
+    })
+  ).value
   const res = await fetch(`${API_URL}/users/change_email`, {
     method: 'POST',
     headers: {
@@ -107,7 +140,11 @@ export async function cambiarEmail(nuevoEmail, contraseñaActual) {
 export async function cambiarContraseña(contraseñaActual, nuevaContraseña) {
   if (USAR_MOCKS) return authMock.changePassword(contraseñaActual, nuevaContraseña) // TODO: Fix mocks
 
-  const token = localStorage.getItem('auth_token')
+  const token = (
+    await Preferences.get({
+      key: 'auth_token',
+    })
+  ).value
   const res = await fetch(`${API_URL}/users/change_password`, {
     method: 'POST',
     headers: {
@@ -123,7 +160,11 @@ export async function cambiarContraseña(contraseñaActual, nuevaContraseña) {
 export async function invitarColaborador(email) {
   if (USAR_MOCKS) return authMock.registerCollaborator(email) // TODO: Fix mocks
 
-  const token = localStorage.getItem('auth_token')
+  const token = (
+    await Preferences.get({
+      key: 'auth_token',
+    })
+  ).value
   const res = await fetch(`${API_URL}/users/register`, {
     method: 'POST',
     headers: {

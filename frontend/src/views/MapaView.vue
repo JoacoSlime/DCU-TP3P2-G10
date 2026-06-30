@@ -6,9 +6,10 @@ import Modal from '../components/Modal.vue'
 import ListCard from '../components/ListCard.vue'
 import { obtenerPuntos } from '@/services/puntosService.js'
 import IniciarSesionModal from '../components/IniciarSesionModal.vue'
+import { Preferences } from '@capacitor/preferences'
 
 let map = null
-const showModal = ref(true)
+const showModal = ref(false)
 const puntos = ref([])
 const searchQuery = ref('')
 const mostrarLogin = ref(false)
@@ -17,9 +18,8 @@ const mostrarLogin = ref(false)
 const puntosFiltrados = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
   if (!query) return puntos.value
-  return puntos.value.filter(p =>
-    p.nombre?.toLowerCase().includes(query) ||
-    p.title?.toLowerCase().includes(query)
+  return puntos.value.filter(
+    (p) => p.nombre?.toLowerCase().includes(query) || p.title?.toLowerCase().includes(query),
   )
 })
 
@@ -27,63 +27,83 @@ const getColor = (nivel) => {
   const colores = {
     alto: '#e53e3e',
     media: '#dd6b20',
-    baja: '#d69e2e'
+    baja: '#d69e2e',
   }
   return colores[nivel?.toLowerCase()] || '#a0aec0'
 }
 
 onMounted(async () => {
-  //Cargar puntos desde la API
-  puntos.value = await obtenerPuntos()
-  console.log('Puntos cargados:', puntos.value)
+  try {
+    //Verificar sesión para el modal
+    const [logged, token, yaVioModal] = await Promise.all([
+      Preferences.get({ key: 'logged' }),
+      Preferences.get({ key: 'auth_token' }),
+      Preferences.get({ key: 'yaVioModal' }),
+    ])
 
-  //Verificar sesión para el modal
-  const logged = localStorage.getItem('logged')
-  const token = localStorage.getItem('auth_token')
-  const role = localStorage.getItem('role')
-  const yaVioModal = localStorage.getItem('yaVioModal')
+    console.log('--- DEBUG DE SESIÓN ---')
+    console.log('logged:', logged.value)
+    console.log('token:', token.value)
+    console.log('yaVioModal:', yaVioModal.value)
 
-  console.log("--- DEBUG DE SESIÓN ---")
-  console.log("Valor de 'logged':", logged)
-  console.log("Valor de 'role':", role)
-
-  // SI ESTÁ LOGUEADO → NO MOSTRAR MODAL (prioridad máxima)
-  if (logged === 'true' || token) {
-    showModal.value = false
-  }
-  // SI NO ESTÁ LOGUEADO PERO YA VIO EL MODAL → NO MOSTRAR
-  else if (yaVioModal === 'true') {
-    showModal.value = false
-  }
-  // SI NO ESTÁ LOGUEADO Y NO VIO EL MODAL → MOSTRAR
-  else {
-    showModal.value = true
-  }
-  console.log("ShowModal ahora es:", showModal.value)
-
-  //Inicializar el mapa
-  map = L.map('map').setView([-34.7, -58.2], 10)
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map)
-
-  //Agregar marcadores al mapa
-  puntos.value.forEach(p => {
-    const lat = p.lat || p.latitude
-    const lng = p.lng || p.longitude
-
-    if (lat && lng) {
-      L.circleMarker([parseFloat(lat), parseFloat(lng)], {
-        color: getColor(p.contaminacion),
-        radius: 10,
-        fillOpacity: 0.8,
-        weight: 2
-      })
-        .addTo(map)
-        .bindPopup(`<b>${p.nombre || p.title}</b><br>Contaminación: ${p.contaminacion || 'Media'}`)
+    // SI ESTÁ LOGUEADO → NO MOSTRAR MODAL (prioridad máxima)
+    if (logged.value === 'true' || token.value) {
+      showModal.value = false
     }
-  })
+    // SI NO ESTÁ LOGUEADO PERO YA VIO EL MODAL → NO MOSTRAR
+    else if (yaVioModal.value === 'true') {
+      showModal.value = false
+    }
+    // SI NO ESTÁ LOGUEADO Y NO VIO EL MODAL → MOSTRAR
+    else {
+      showModal.value = true
+    }
+
+    console.log('ShowModal ahora es:', showModal.value)
+  } catch (error) {
+    console.error('Error al leer preferencias:', error)
+    showModal.value = false // fallback seguro
+  }
+
+  //Cargar puntos desde la API
+
+  try {
+    puntos.value = await obtenerPuntos()
+    console.log('Puntos cargados:', puntos.value)
+  } catch (error) {
+    console.error('Error al obtener puntos:', error)
+    puntos.value = []
+  }
+
+  try {
+    //Inicializar el mapa
+    map = L.map('map').setView([-34.7, -58.2], 10)
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+    }).addTo(map)
+
+    //Agregar marcadores al mapa
+    puntos.value.forEach((p) => {
+      const lat = p.lat || p.latitude
+      const lng = p.lng || p.longitude
+
+      if (lat && lng) {
+        L.circleMarker([parseFloat(lat), parseFloat(lng)], {
+          color: getColor(p.contaminacion),
+          radius: 10,
+          fillOpacity: 0.8,
+          weight: 2,
+        })
+          .addTo(map)
+          .bindPopup(
+            `<b>${p.nombre || p.title}</b><br>Contaminación: ${p.contaminacion || 'Media'}`,
+          )
+      }
+    })
+  } catch (error) {
+    console.error('Error al inicializar el mapa:', error)
+  }
 })
 
 const centrarMapa = (punto) => {
@@ -94,15 +114,21 @@ const centrarMapa = (punto) => {
   }
 }
 
-const cerrarModal = () => {
+const cerrarModal = async () => {
   showModal.value = false
-  localStorage.setItem('yaVioModal', 'true')
+  await Preferences.set({
+    key: 'yaVioModal',
+    value: 'true',
+  })
 }
 
-const manejarLoginExitoso = () => {
+const manejarLoginExitoso = async () => {
   mostrarLogin.value = false
   showModal.value = false
-  localStorage.setItem('yaVioModal', 'true')
+  await Preferences.set({
+    key: 'yaVioModal',
+    value: 'true',
+  })
 }
 </script>
 
@@ -110,11 +136,20 @@ const manejarLoginExitoso = () => {
   <div class="map-container">
     <div id="map"></div>
 
-    <ListCard v-if="!showModal" class="floating-list" title="Puntos de Contaminación" :items="puntosFiltrados"
-      @go-to="centrarMapa" />
+    <ListCard
+      v-if="!showModal"
+      class="floating-list"
+      title="Puntos de Contaminación"
+      :items="puntosFiltrados"
+      @go-to="centrarMapa"
+    />
 
     <Modal v-if="showModal" :show="true" @close="cerrarModal" />
-    <IniciarSesionModal v-if="mostrarLogin" @close="mostrarLogin = false" @login-success="manejarLoginExitoso" />
+    <IniciarSesionModal
+      v-if="mostrarLogin"
+      @close="mostrarLogin = false"
+      @login-success="manejarLoginExitoso"
+    />
   </div>
 </template>
 

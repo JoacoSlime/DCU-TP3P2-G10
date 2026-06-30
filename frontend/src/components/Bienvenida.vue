@@ -3,17 +3,24 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Boton from './Boton.vue'
 import UserCard from './UserCard.vue'
+import { Preferences } from '@capacitor/preferences'
 
 const emit = defineEmits(['close'])
 const router = useRouter()
 const currentPage = ref('welcome')
 
-const closeModal = () => {
-  localStorage.setItem('hasVisited', 'true')
+const closeModal = async () => {
+  await Preferences.set({
+    key: 'yaVioModal',
+    value: 'true',
+  })
   emit('close')
 }
-const login = () => {
-  localStorage.setItem('hasVisited', 'true')
+const login = async () => {
+  await Preferences.set({
+    key: 'yaVioModal',
+    value: 'true',
+  })
   router.push('/login')
   emit('close')
 }

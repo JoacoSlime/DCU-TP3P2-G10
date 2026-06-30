@@ -5,6 +5,8 @@ import './assets/main.css'
 
 import { API_URL } from './config'
 
+console.log('Usando la api ' + API_URL)
+
 const app = createApp(App)
 
 app.use(router)

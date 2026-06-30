@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import IniciarSesionModal from './IniciarSesionModal.vue'
+import { Preferences } from '@capacitor/preferences'
 
 const emit = defineEmits(['close'])
 
@@ -9,11 +10,20 @@ defineProps({ show: Boolean })
 
 const mostrarLogin = ref(false)
 
-const entrarComoInvitado = () => {
+const entrarComoInvitado = async () => {
   // Guardar que el usuario es invitado
-  localStorage.setItem('rol', 'invitado')
-  localStorage.setItem('logged', 'true')
-  localStorage.setItem('yaVioModal', 'true')
+  await Preferences.set({
+    key: 'role',
+    value: 'invitado',
+  })
+  await Preferences.set({
+    key: 'logged',
+    value: 'true',
+  })
+  await Preferences.set({
+    key: 'yaVioModal',
+    value: 'true',
+  })
   emit('close')
 }
 
@@ -21,9 +31,12 @@ const abrirLogin = () => {
   mostrarLogin.value = true
 }
 
-const cerrarLogin = () => {
+const cerrarLogin = async () => {
   mostrarLogin.value = false
-  localStorage.setItem('yaVioModal', 'true')
+  await Preferences.set({
+    key: 'yaVioModal',
+    value: 'true',
+  })
   emit('close')
 }
 </script>
@@ -35,9 +48,7 @@ const cerrarLogin = () => {
         <img src="/logoapp.png" alt="Logo ContaminApp" class="modal-logo" />
         <h1>¡Bienvenido a ContaminApp!</h1>
         <p>App de gestión de puntos de contaminación en la Franja Costera Sur</p>
-        <button class="btn-bienvenida" @click="entrarComoInvitado">
-          VER PUNTOS EN EL MAPA
-        </button>
+        <button class="btn-bienvenida" @click="entrarComoInvitado">VER PUNTOS EN EL MAPA</button>
 
         <p class="footer-text">
           ¿Sos colaborador o administrador?
