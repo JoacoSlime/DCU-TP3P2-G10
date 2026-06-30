@@ -6,5 +6,5 @@ from wtforms import EmailField, PasswordField, validators
 
 @final
 class LoginForm(FlaskForm):
-    email = EmailField(None, [validators.DataRequired(), validators.Email()])
-    password = PasswordField(None, [validators.DataRequired()])
+    email = EmailField(None, [validators.InputRequired(), validators.Email()])
+    password = PasswordField(None, [validators.InputRequired()])
