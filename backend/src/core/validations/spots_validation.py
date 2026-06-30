@@ -8,8 +8,8 @@ from wtforms import DecimalField, IntegerField, StringField, validators
 class AddSpotForm(FlaskForm):
     title = StringField(None, [validators.Length(3)])
 
-    latitude = DecimalField(None, [validators.InputRequired()])
-    longitude = DecimalField(None, [validators.InputRequired()])
+    latitude = DecimalField(None, [validators.NumberRange(-90, 90)])
+    longitude = DecimalField(None, [validators.NumberRange(-180, 180)])
 
     items_per_m2 = DecimalField(None, [validators.NumberRange(0)])
     weight = DecimalField(None, [validators.NumberRange(0)])
