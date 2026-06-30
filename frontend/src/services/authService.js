@@ -4,12 +4,13 @@ import { adaptarUsuario } from './adapter.js'
 import { Preferences } from '@capacitor/preferences'
 
 export async function login(email, password) {
-  let token
+  let access_token
+  let refresh_token
 
   if (USAR_MOCKS) {
     // TODO: Fix mocks
     const response = await authMock.login(email, password)
-    token = response.token
+    access_token = response.token
   } else {
     const res = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
@@ -18,17 +19,24 @@ export async function login(email, password) {
     })
     const response = await res.json()
     if (!res.ok) throw new Error(response.message || 'Credenciales inválidas')
-    token = response.token
+    access_token = response.access_token
+    refresh_token = response.refresh_token
   }
 
-  if (token) {
+  if (access_token) {
     await Preferences.set({
       key: 'auth_token',
-      value: token,
+      value: access_token,
+    })
+  }
+  if (refresh_token) {
+    await Preferences.set({
+      key: 'refresh_token',
+      value: refresh_token,
     })
   }
 
-  return token
+  return { access_token, refresh_token }
 }
 
 export async function logout() {
@@ -53,6 +61,9 @@ export async function logout() {
     })
     await Preferences.remove({
       key: 'auth_token',
+    })
+    await Preferences.remove({
+      key: 'refresh_token',
     })
     await Preferences.remove({
       key: 'logged',
