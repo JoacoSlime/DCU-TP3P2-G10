@@ -1,4 +1,5 @@
 import secrets
+from datetime import timedelta
 from os import environ
 from typing import final
 
@@ -12,6 +13,8 @@ class Config(object):
 
     JWT_SECRET_KEY: str = secrets.token_hex(32)
     JWT_TOKEN_LOCATION: list[str] = ["headers"]
+    JWT_ACCESS_TOKEN_EXPIRES: timedelta = timedelta(hours=1)
+    JWT_REFRESH_TOKEN_EXPIRES: timedelta = timedelta(days=30)
     SQLALCHEMY_ECHO: bool = True
     RESEND_KEY: str = environ.get("RESEND_KEY") or (_ for _ in ()).throw(
         ValueError("RESEND_KEY environment variable must be set")
