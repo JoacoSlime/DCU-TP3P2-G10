@@ -43,7 +43,10 @@ Desde la carpeta `frontend`:
 ### Backend
 
 - `POSTGRES_PASSWORD`: Contraseña utilizada por Postres y Flask para conectarse.
-- `RESEND_KEY`: Key de la api de Resend para el envio de emails.
+- `SMTP_HOST`: Dirección del servidor SMTP (Con mailtrap `live.smtp.mailtrap.io`)
+- `SMTP_PORT`: Puerto del servidor SMTP (Con mailtrap `587`)
+- `SMTP_LOGIN`: Nombre de usuario del servidor SMTP (Con mailtrap `api`)
+- `SMTP_PASSWORD`: Contraseña del servidor SMTP (Con mailtrap la API KEY)
 - `JWT_SECRET`: Secreto JWT utilizado para la autentificación con JWT.
 - `FLASK_SECRET_KEY`: Utilizado por Flask para la generación de sesiones, CSRF, etc.
 - `URL_BASE_PUBLIC_APP` (opcional): URL del backend, utilizado por CORS.

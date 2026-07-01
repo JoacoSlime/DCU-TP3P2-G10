@@ -1,3 +1,5 @@
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from typing import cast
 
 from flask import Blueprint, current_app, jsonify, request
@@ -87,21 +89,22 @@ def register():
     if not form.email.data:
         return jsonify(message="Hubo un error al validar el email"), 500
 
-    sender = "ContaminApp <contaminapp@example.com>"
+    sender = "contaminapp@demomailtrap.com"
     receiver = form.email.data
-    message = f"""\
-Subject: Invitación a colaborar en ContaminApp
-To: {receiver}
-From: {sender}
-
+    message = MIMEMultipart()
+    message["From"] = sender
+    message["To"] = receiver
+    message["Subject"] = "Invitación a colaborar en ContaminApp"
+    body = f"""\
 <h1>Fuiste invitade a ContaminApp</h1>
 
 <p>Para finalizar la creación de tu cuenta, crea tu contraseña <a href="http://contaminapp.joacoslime.zapto.org/finalizar_registro?token={token}">aquí</a></p>
 
 <p>O copia este enlace: http://contaminapp.joacoslime.zapto.org/finalizar_registro?token={token}</p>"""
+    message.attach(MIMEText(body, "html"))
 
     try:
-        _ = mail.sendmail(sender, receiver, message)
+        _ = mail.sendmail(sender, receiver, message.as_string())
     except Exception as e:
         current_app.logger.error(e)
         _ = delete_user(user.id)
