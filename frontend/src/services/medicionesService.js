@@ -67,6 +67,8 @@ export async function eliminarMedicion(id) {
     method: 'DELETE',
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   })
+  const data = await res.json()
+  console.log('Data:', data)
   if (!res.ok) throw new Error(data.message || 'Error al eliminar medición')
-  return res.json()
+  return data
 }
