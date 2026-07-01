@@ -4,20 +4,16 @@
 
     <div class="listado-header">
       <h2 class="titulo-seccion">Listado de puntos contaminados</h2>
-      <router-link
-        to="/agregar-punto"
-        class="boton-agregar"
-        aria-label="Agregar nuevo punto contaminado"
-      >
+      <!-- Botón agregar: solo visible para usuarios autenticados -->
+      <router-link v-if="botonAgregar" to="/agregar-punto" class="boton-agregar"
+        aria-label="Agregar nuevo punto contaminado">
         <span aria-hidden="true">+</span> Agregar nuevo punto
       </router-link>
     </div>
 
     <!-- Contador de resultados -->
     <p class="contador" aria-live="polite">
-      {{ puntos.length }} punto{{ puntos.length !== 1 ? 's' : '' }} encontrado{{
-        puntos.length !== 1 ? 's' : ''
-      }}
+      {{ puntos.length }} punto{{ puntos.length !== 1 ? 's' : '' }} encontrado{{ puntos.length !== 1 ? 's' : '' }}
     </p>
 
     <!-- Tabla de puntos -->
@@ -42,23 +38,15 @@
             <td class="col-coordenadas">
               {{ punto.lat?.toFixed(4) }}, {{ punto.lng?.toFixed(4) }}
             </td>
-
             <td class="col-acciones">
               <div class="acciones-grupo">
-                <router-link
-                  :to="`/punto/${punto.id}`"
-                  class="btn-ver"
-                  aria-label="Ver detalles de {{ punto.nombre }}"
-                  title="Ver detalles"
-                >
+                <router-link :to="`/punto/${punto.id}`" class="btn-ver" :aria-label="`Ver detalles de ${punto.nombre}`"
+                  title="Ver detalles">
                   Ver
                 </router-link>
-                <button
-                  @click="abrirModalEliminar(punto)"
-                  class="btn-eliminar"
-                  aria-label="Eliminar punto {{ punto.nombre }}"
-                  title="Eliminar punto"
-                >
+                <!-- Botón eliminar: solo visible para admin -->
+                <button v-if="botonEliminar" @click="abrirModalEliminar(punto)" class="btn-eliminar"
+                  :aria-label="`Eliminar punto ${punto.nombre}`" title="Eliminar punto">
                   Eliminar
                 </button>
               </div>
@@ -71,18 +59,14 @@
     <!-- Mensaje vacío -->
     <div v-else class="sin-resultados">
       <p>No hay puntos contaminados registrados.</p>
-      <router-link to="/agregar-punto" class="boton-agregar">
+      <router-link v-if="botonAgregar" to="/agregar-punto" class="boton-agregar">
         + Agregar el primer punto
       </router-link>
     </div>
 
     <!-- Modal de confirmación -->
-    <ModalConfirmacion
-      :visible="mostrarModal"
-      :punto="puntoSeleccionado"
-      @confirmar="eliminar"
-      @cancelar="cerrarModal"
-    />
+    <ModalConfirmacion :visible="mostrarModal" :punto="puntoSeleccionado" @confirmar="eliminar"
+      @cancelar="cerrarModal" />
   </div>
 </template>
 
@@ -91,32 +75,30 @@ import { ref, onMounted } from 'vue'
 import MigasDePan from '@/components/MigasPan.vue'
 import ModalConfirmacion from '@/components/ModalConfirmacionPunto.vue'
 import { obtenerPuntos, eliminarPunto } from '@/services/puntosService.js'
+import { obtenerUsuarioActual, tienePermiso } from '@/services/authService.js'
 
 const puntos = ref([])
 const mostrarModal = ref(false)
 const puntoSeleccionado = ref(null)
+const estaLogueado = ref(false)
+const botonEliminar = ref(false)
+const botonAgregar = ref(false)
 
 const migas = [
   { texto: 'Inicio', ruta: '/' },
-  { texto: 'Listado de puntos', ruta: null },
+  { texto: 'Listado de puntos', ruta: null }
 ]
-
-const getColor = (nivel) => {
-  const colores = {
-    Alta: '#e53e3e',
-    Media: '#dd6b20',
-    Baja: '#38a169',
-  }
-  return colores[nivel] || '#718096'
-}
 
 onMounted(async () => {
   await cargarPuntos()
+  tienePermiso('spots.remove').then((res) => (botonEliminar.value = res))
+  tienePermiso('spots.add').then((res) => (botonAgregar.value = res))
 })
 
 async function cargarPuntos() {
   puntos.value = await obtenerPuntos()
 }
+
 
 function abrirModalEliminar(punto) {
   puntoSeleccionado.value = punto
@@ -175,9 +157,7 @@ async function eliminar() {
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
-  transition:
-    background 0.2s,
-    transform 0.1s;
+  transition: background 0.2s, transform 0.1s;
   border: none;
   cursor: pointer;
 }
@@ -198,7 +178,6 @@ async function eliminar() {
 /* ===== CONTADOR ===== */
 .contador {
   color: #5f6c7f;
-  /* ← Contraste 4.65:1 */
   font-size: 0.9rem;
   margin-bottom: 1rem;
   padding-left: 4px;
@@ -287,22 +266,6 @@ async function eliminar() {
   font-family: 'Courier New', monospace;
   font-size: 0.85rem;
   color: #657286;
-  /* ← Contraste 4.88:1 */
-}
-
-.col-contaminacion {
-  width: 120px;
-}
-
-.etiqueta-contaminacion {
-  display: inline-block;
-  padding: 3px 12px;
-  border-radius: 12px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
 }
 
 .col-acciones {
@@ -349,7 +312,6 @@ async function eliminar() {
 .btn-eliminar {
   background: #fef2f2;
   color: #c54033;
-  /* ← Contraste 4.62:1 */
   border: 1px solid #fecaca;
 }
 
@@ -417,10 +379,6 @@ async function eliminar() {
     font-size: 0.75rem;
   }
 
-  .col-contaminacion {
-    width: 80px;
-  }
-
   .col-acciones {
     width: 130px;
   }
@@ -433,6 +391,7 @@ async function eliminar() {
 }
 
 @media (max-width: 500px) {
+
   .tabla-puntos th,
   .tabla-puntos td {
     padding: 8px 8px;
@@ -446,17 +405,8 @@ async function eliminar() {
     display: none;
   }
 
-  .col-contaminacion {
-    width: auto;
-  }
-
   .col-acciones {
     width: auto;
-  }
-
-  .etiqueta-contaminacion {
-    font-size: 0.6rem;
-    padding: 2px 8px;
   }
 
   .btn-ver,
