@@ -113,7 +113,11 @@ async function cerrarSesion() {
     </template>
   </div>
 
-  <IniciarSesionModal v-if="mostrarLogin" @close="cerrarLogin" @login-success="manejarLoginExitoso" />
+  <IniciarSesionModal
+    v-if="mostrarLogin"
+    @close="cerrarLogin"
+    @login-success="manejarLoginExitoso"
+  />
 </template>
 
 <style scoped>
