@@ -98,7 +98,7 @@ def add():
 
 
 @spots_bp.delete("/delete/<int:spot_id>")
-@need_permission("spots.delete")
+@need_permission("spots.remove")
 def delete(spot_id: int):
     result = delete_spot(spot_id)
 

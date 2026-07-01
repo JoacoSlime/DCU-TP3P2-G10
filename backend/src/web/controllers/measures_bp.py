@@ -74,7 +74,7 @@ def add():
 
 
 @measures_bp.delete("/delete/<int:measure_id>")
-@need_permission("measures.delete")
+@need_permission("measures.remove")
 def delete(measure_id: int):
     result = delete_measure(measure_id)
 

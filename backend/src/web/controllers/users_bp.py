@@ -107,7 +107,7 @@ def register():
 
 
 @users_bp.delete("/delete/<int:user_id>")
-@need_permission("collaborators.delete")
+@need_permission("collaborators.remove")
 def delete(user_id: int):
     result = delete_user(user_id)
 
