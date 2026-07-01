@@ -1,7 +1,8 @@
 <script setup>
-import HamburgerMenu from '@/components/HamburgerMenu.vue'
-import { watch, ref } from 'vue'
+import { watch, ref, provide } from 'vue'
 import { useRoute } from 'vue-router'
+import HamburgerButton from '@/components/HamburgerButton.vue'
+import MobileMenu from '@/components/MobileMenu.vue'
 
 function ayuda() {
   alert('Envía un correo a administrador@admin.com')
@@ -9,6 +10,7 @@ function ayuda() {
 
 const route = useRoute()
 const mainScreen = ref(route.path == '/')
+const mobileMenuOpen = ref(false)
 
 watch(
   () => route.path,
@@ -16,16 +18,29 @@ watch(
     mainScreen.value = newPath == '/'
   },
 )
+
+const openMobileMenu = () => (mobileMenuOpen.value = true)
+const closeMobileMenu = () => (mobileMenuOpen.value = false)
+const toggleMobileMenu = () => (mobileMenuOpen.value = !mobileMenuOpen.value)
+
+provide('mobileMenuOpen', mobileMenuOpen)
+provide('openMobileMenu', openMobileMenu)
+provide('closeMobileMenu', closeMobileMenu)
+provide('toggleMobileMenu', toggleMobileMenu)
+provide('mainScreen', mainScreen)
 </script>
 
 <template>
   <div class="app">
     <header class="header">
-      <hamburger-menu :showButton="!mainScreen" />
+      <div class="header-menu-btn" v-if="!mainScreen">
+        <HamburgerButton @click="toggleMobileMenu" />
+      </div>
       <h1>Contaminación de la franja costera sur</h1>
     </header>
 
-    <div class="contenedor-principal">
+    <MobileMenu v-if="mobileMenuOpen" />
+    <div v-else class="contenedor-principal">
       <aside class="sidebar">
         <!-- Menu Desktop -->
         <nav class="menu">
@@ -64,6 +79,7 @@ body {
   flex-direction: column;
   height: 100vh;
   background: #ecf0f1;
+  overflow: hidden; /* prevents root scroll during menu animation */
 }
 
 /* ===== HEADER ===== */
@@ -93,6 +109,7 @@ body {
   flex: 1;
   overflow: hidden;
   position: relative;
+  min-height: 0;
 }
 
 /* ===== SIDEBAR ===== */
