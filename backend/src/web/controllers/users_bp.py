@@ -1,12 +1,12 @@
 from typing import cast
 
-import resend
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import (
     get_current_user,
     jwt_required,  # pyright: ignore[reportUnknownVariableType]
 )
 
+from src.core.mail import mail
 from src.core.role import get_role_by_name
 from src.core.schemas import user_schema, users_schema
 from src.core.user import (
@@ -83,21 +83,25 @@ def register():
     (user, token) = user
 
     # Envio de mail
-    params: resend.Emails.SendParams = {
-        "from": "ContaminApp <contaminapp@example.com>",
-        "to": [form.email.data],  # pyright: ignore[reportAssignmentType]
-        "subject": "Invitación a colaborar en ContaminApp",
-        "html": f"""
-            <h1>Fuiste invitade a ContaminApp</h1>
 
-            <p>Para finalizar la creación de tu cuenta, crea tu contraseña <a href="http://contaminapp.joacoslime.zapto.org/finalizar_registro?token={token}">aquí</a></p>
+    if not form.email.data:
+        return jsonify(message="Hubo un error al validar el email"), 500
 
-            <p>O copia este enlace: http://contaminapp.joacoslime.zapto.org/finalizar_registro?token={token}</p>
-        """,
-    }
+    sender = "ContaminApp <contaminapp@example.com>"
+    receiver = form.email.data
+    message = f"""\
+Subject: Invitación a colaborar en ContaminApp
+To: {receiver}
+From: {sender}
+
+<h1>Fuiste invitade a ContaminApp</h1>
+
+<p>Para finalizar la creación de tu cuenta, crea tu contraseña <a href="http://contaminapp.joacoslime.zapto.org/finalizar_registro?token={token}">aquí</a></p>
+
+<p>O copia este enlace: http://contaminapp.joacoslime.zapto.org/finalizar_registro?token={token}</p>"""
 
     try:
-        _ = resend.Emails.send(params)
+        _ = mail.sendmail(sender, receiver, message)
     except Exception as e:
         current_app.logger.error(e)
         _ = delete_user(user.id)

@@ -16,8 +16,20 @@ class Config(object):
     JWT_ACCESS_TOKEN_EXPIRES: timedelta = timedelta(hours=1)
     JWT_REFRESH_TOKEN_EXPIRES: timedelta = timedelta(days=30)
     SQLALCHEMY_ECHO: bool = True
-    RESEND_KEY: str = environ.get("RESEND_KEY") or (_ for _ in ()).throw(
-        ValueError("RESEND_KEY environment variable must be set")
+    SMTP_HOST: str = environ.get("SMTP_HOST") or (_ for _ in ()).throw(
+        ValueError("SMTP_HOST environment variable must be set")
+    )
+    SMTP_PORT: int = int(
+        environ.get("SMTP_PORT")
+        or (_ for _ in ()).throw(
+            ValueError("SMTP_PORT environment variable must be set")
+        )
+    )
+    SMTP_LOGIN: str = environ.get("SMTP_LOGIN") or (_ for _ in ()).throw(
+        ValueError("SMTP_LOGIN environment variable must be set")
+    )
+    SMTP_PASSWORD: str = environ.get("SMTP_PASSWORD") or (_ for _ in ()).throw(
+        ValueError("SMTP_PASSWORD environment variable must be set")
     )
     SECRET_KEY: str = secrets.token_hex()
     WTF_CSRF_ENABLED: bool = False

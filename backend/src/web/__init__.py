@@ -1,6 +1,5 @@
 from os import environ
 
-import resend
 import wtforms_json  # pyright: ignore[reportMissingTypeStubs]
 from flask import Flask, jsonify
 
@@ -21,8 +20,6 @@ def create_app(env: str = "production") -> Flask:
 
     db.init_app(app)
     jwt.init_app(app)
-
-    resend.api_key = config[env].RESEND_KEY
 
     # Healtchecker endpoint
     @app.route("/healthcheck")
