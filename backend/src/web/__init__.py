@@ -3,7 +3,7 @@ from os import environ
 import wtforms_json  # pyright: ignore[reportMissingTypeStubs]
 from flask import Flask, jsonify
 
-from src.core import cors, db, jwt, seeds
+from src.core import cors, db, jwt, mail, seeds
 from src.web.controllers.auth_bp import auth_bp
 from src.web.controllers.measures_bp import measures_bp
 from src.web.controllers.spots_bp import spots_bp
@@ -20,6 +20,7 @@ def create_app(env: str = "production") -> Flask:
 
     db.init_app(app)
     jwt.init_app(app)
+    mail.init(app)
 
     # Healtchecker endpoint
     @app.route("/healthcheck")
