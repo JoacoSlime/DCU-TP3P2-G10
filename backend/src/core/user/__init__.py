@@ -72,8 +72,9 @@ def complete_register(
     Returns `None` if a user with such token doesn't exist.
     """
 
+    token_hash = generate_password_hash(token)
     user = db.session.execute(
-        select(User).where(User.generation_token == token)
+        select(User).where(User.generation_token == token_hash)
     ).scalar_one_or_none()
 
     if user:
