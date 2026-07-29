@@ -88,7 +88,7 @@ def register():
     user = add_user(form.email.data)  # pyright: ignore[reportArgumentType]
 
     if not user:
-        return jsonify(message="Ya existe un punto con ese título"), 400
+        return jsonify(message="Ya existe un usuario con ese email"), 400
     (user, token) = user
 
     # Envio de mail
