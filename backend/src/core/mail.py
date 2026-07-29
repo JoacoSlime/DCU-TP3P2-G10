@@ -27,7 +27,7 @@ class MailHandler:
         self.login = cast(str, app.config.get("SMTP_LOGIN"))  # pyright: ignore[reportUnknownMemberType]
         self.password = cast(str, app.config.get("SMTP_PASSWORD"))  # pyright: ignore[reportUnknownMemberType]
         self.sender = cast(str, app.config.get("SMTP_SENDER_EMAIL"))  # pyright: ignore[reportUnknownMemberType]
-        self.url = cast(str, app.config.get("URL_BASE_PUBLIC_APP"))  # pyright: ignore[reportUnknownMemberType]
+        self.url = cast(str, app.config.get("URL_BASE_PUBLIC_API"))  # pyright: ignore[reportUnknownMemberType]
 
     def send_verification_mail(self, receiver: str, token: str) -> None:
         if not self.initialized:
