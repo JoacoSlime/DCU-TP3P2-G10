@@ -52,6 +52,7 @@ def add_user(email: str) -> tuple[User, str] | None:
 
     token_hash = generate_password_hash(token)
 
+    email = email.lower()
     user = db.session.execute(
         insert(User)
         .values(email=email, password=password_hash, generation_token=token_hash)
@@ -76,7 +77,7 @@ def complete_register(
         select(User).where(User.generation_token != None)
     ).scalars().all()
 
-    user = next(u for u in users if u.generation_token and check_password_hash(u.generation_token, token))
+    user = next((u for u in users if u.generation_token and check_password_hash(u.generation_token, token)), None)
 
 
     if user:
@@ -129,6 +130,7 @@ def change_user_email(id: int, email: str) -> User | None:
 
     user = db.session.execute(select(User).where(User.id == id)).scalar_one_or_none()
 
+    email = email.lower()
     if user:
         user.email = email
         db.session.commit()
@@ -166,6 +168,7 @@ def get_user_by_email(email: str) -> User | None:
     """
     Returns user with given email if it exists.
     """
+    email = email.lower()
     user = db.session.execute(
         select(User).where(User.email == email)
     ).scalar_one_or_none()
