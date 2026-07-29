@@ -4,7 +4,6 @@ from sqlalchemy import ColumnElement, insert, select
 
 from src.core.db import db
 from src.core.spot.spot import Spot
-from src.core.user.user import User
 
 
 def add_spot(title: str, latitude: Decimal, longitude: Decimal) -> Spot | None:

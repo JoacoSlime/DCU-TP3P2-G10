@@ -1,5 +1,12 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from smtplib import (
+    SMTPDataError,
+    SMTPHeloError,
+    SMTPNotSupportedError,
+    SMTPRecipientsRefused,
+    SMTPSenderRefused,
+)
 from typing import cast
 
 from flask import Blueprint, current_app, jsonify, request
@@ -105,10 +112,10 @@ def register():
 
     try:
         _ = mail.sendmail(sender, receiver, message.as_string())
-    except Exception as e:
+    except (SMTPRecipientsRefused, SMTPHeloError, SMTPSenderRefused, SMTPDataError, SMTPNotSupportedError) as e:
         current_app.logger.error(e)
         _ = delete_user(user.id)
-        return jsonify(message="Hubo un error al enviar el mail"), 500
+        return jsonify(message="Hubo un error al enviar el correo"), 500
 
     return jsonify(user=user_schema.dump(user))
 

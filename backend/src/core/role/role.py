@@ -29,10 +29,10 @@ class Role(Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30), unique=True)
 
-    permissions: Mapped[list["Permission"]] = relationship(
+    permissions: Mapped[list["Permission"]] = relationship(  # noqa: UP037
         back_populates="roles", secondary=roles_permissions
     )
-    users: Mapped[list["User"]] = relationship(back_populates="role")
+    users: Mapped[list["User"]] = relationship(back_populates="role")  # noqa: UP037
 
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(

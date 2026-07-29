@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from sqlalchemy import ColumnElement, insert, select
+from sqlalchemy import insert, select
 
 from src.core.db import db
 from src.core.measure.measure import Measure

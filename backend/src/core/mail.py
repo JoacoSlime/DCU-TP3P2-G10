@@ -14,3 +14,15 @@ def init(app: Flask):
     _ = mail.connect(host, port)
     _ = mail.starttls()
     _ = mail.login(login, password)
+    config(app)
+
+
+def config(app: Flask):
+    """
+    Configures the SMTP session teardown.
+    """
+
+    @app.teardown_request
+    def close_smtp_session(exception: BaseException | None = None):  # pyright: ignore[reportUnusedFunction]
+        app.logger.exception(exception)
+        app.logger.info(mail.quit())

@@ -26,10 +26,10 @@ class User(Model):
     generation_token: Mapped[str | None] = mapped_column(String(256), unique=True)
 
     role_id: Mapped[int | None] = mapped_column(ForeignKey(Role.id), nullable=True)
-    role: Mapped["Role | None"] = relationship(
+    role: Mapped["Role | None"] = relationship(  # noqa: UP037
         back_populates="users", foreign_keys=[role_id]
     )
-    measures: Mapped[list["Measure"]] = relationship(back_populates="collaborator")
+    measures: Mapped[list["Measure"]] = relationship(back_populates="collaborator")  # noqa: UP037
 
     created_at: Mapped[datetime] = mapped_column(default=datetime.now, index=True)
     updated_at: Mapped[datetime] = mapped_column(

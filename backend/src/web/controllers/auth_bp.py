@@ -2,7 +2,7 @@ from typing import cast
 
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import (
-    create_access_token,
+    create_access_token,  # pyright: ignore[reportUnknownVariableType]
     create_refresh_token,  # pyright: ignore[reportUnknownVariableType]
     current_user,  # pyright: ignore[reportAny]
 )
