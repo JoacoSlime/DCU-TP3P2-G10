@@ -47,6 +47,7 @@ Desde la carpeta `frontend`:
 - `SMTP_PORT`: Puerto del servidor SMTP (Con mailtrap `587`)
 - `SMTP_LOGIN`: Nombre de usuario del servidor SMTP (Con mailtrap `api`)
 - `SMTP_PASSWORD`: Contraseña del servidor SMTP (Con mailtrap la API KEY)
+- `SMTP_SENDER_EMAIL`: Dirección de email del emisor para mails de verificación.
 - `JWT_SECRET`: Secreto JWT utilizado para la autentificación con JWT.
 - `FLASK_SECRET_KEY`: Utilizado por Flask para la generación de sesiones, CSRF, etc.
 - `URL_BASE_PUBLIC_APP` (opcional): URL del backend, utilizado por CORS.

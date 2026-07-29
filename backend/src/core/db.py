@@ -29,7 +29,8 @@ def config(app: Flask):
 
     @app.teardown_request
     def close_db_session(exception: BaseException | None = None):  # pyright: ignore[reportUnusedFunction]
-        app.logger.exception(exception)
+        if exception:
+            app.logger.exception(exception)
         db.session.close()
 
 

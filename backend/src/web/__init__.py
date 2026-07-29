@@ -23,7 +23,7 @@ def create_app(env: str = "production") -> Flask:
     mail.init(app)
 
     # Healtchecker endpoint
-    @app.route("/healthcheck")
+    @app.route("/api/healthcheck")
     def healthcheck():  # pyright: ignore[reportUnusedFunction]
         response = jsonify({"status": "success", "message": "ContaminApp - Grupo10"})
         return response

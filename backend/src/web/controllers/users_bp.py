@@ -1,5 +1,3 @@
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from smtplib import (
     SMTPDataError,
     SMTPHeloError,
@@ -15,7 +13,7 @@ from flask_jwt_extended import (
     jwt_required,  # pyright: ignore[reportUnknownVariableType]
 )
 
-from src.core.mail import mail
+from src.core.mail import mail_handler
 from src.core.role import get_role_by_name
 from src.core.schemas import user_schema, users_schema
 from src.core.user import (
@@ -94,24 +92,10 @@ def register():
     # Envio de mail
 
     if not form.email.data:
-        return jsonify(message="Hubo un error al validar el email"), 500
-
-    sender = "contaminapp@demomailtrap.com"
-    receiver = form.email.data
-    message = MIMEMultipart()
-    message["From"] = sender
-    message["To"] = receiver
-    message["Subject"] = "Invitación a colaborar en ContaminApp"
-    body = f"""\
-<h1>Fuiste invitade a ContaminApp</h1>
-
-<p>Para finalizar la creación de tu cuenta, crea tu contraseña <a href="http://contaminapp.joacoslime.zapto.org/finalizar_registro?token={token}">aquí</a></p>
-
-<p>O copia este enlace: http://contaminapp.joacoslime.zapto.org/finalizar_registro?token={token}</p>"""
-    message.attach(MIMEText(body, "html"))
+        return jsonify(message="El email es inválido"), 500
 
     try:
-        _ = mail.sendmail(sender, receiver, message.as_string())
+        mail_handler.send_verification_mail(form.email.data, token)
     except (SMTPRecipientsRefused, SMTPHeloError, SMTPSenderRefused, SMTPDataError, SMTPNotSupportedError) as e:
         current_app.logger.error(e)
         _ = delete_user(user.id)
