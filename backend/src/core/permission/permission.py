@@ -20,7 +20,7 @@ class Permission(Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30), unique=True)
 
-    roles: Mapped[list["Role"]] = relationship(
+    roles: Mapped[list["Role"]] = relationship(  # noqa: UP037
         back_populates="permissions", secondary=roles_permissions
     )
 
