@@ -32,6 +32,7 @@ services:
             - SMTP_SENDER_EMAIL=${SMTP_SENDER_EMAIL}
             - JWT_SECRET=${JWT_SECRET}
             - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+            - URL_BASE_PUBLIC_API=${URL_BASE_PUBLIC_API}
         ports:
             - "5000:5000"
         depends_on:

@@ -33,7 +33,7 @@ class CreatePasswordForm(FlaskForm):
     surname = StringField(None, [validators.InputRequired(), validators.Length(1)])
     password = PasswordField(None, [validators.InputRequired()])
 
-    def validate_password(self, _form: CreatePasswordForm, field: PasswordField):
+    def validate_password(_form: CreatePasswordForm, field: PasswordField):
         assert field.data is not None
 
         if len(field.data) < 8:

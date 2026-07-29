@@ -36,7 +36,7 @@ class Config:
         self.SMTP_SENDER_EMAIL: str = environ.get("SMTP_SENDER_EMAIL") or (_ for _ in ()).throw(
             ValueError("SMTP_SENDER_EMAIL environment variable must be set")
         )
-        self.URL_BASE_PUBLIC_APP: str | None = environ.get("URL_BASE_PUBLIC_APP")
+        self.URL_BASE_PUBLIC_API: str | None = environ.get("URL_BASE_PUBLIC_API")
         self.SECRET_KEY: str = secrets.token_hex()
         self.WTF_CSRF_ENABLED: bool = False
 

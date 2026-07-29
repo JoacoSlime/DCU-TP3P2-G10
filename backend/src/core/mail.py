@@ -39,9 +39,9 @@ class MailHandler:
         body = f"""\
     <h1>Fuiste invitade a ContaminApp</h1>
 
-    <p>Para finalizar la creación de tu cuenta, crea tu contraseña <a href="{self.url or "http://localhost:5000/"}finalizar_registro?token={token}">aquí</a></p>
+    <p>Para finalizar la creación de tu cuenta, crea tu contraseña <a href="{self.url if self.url else "http://localhost:5000"}/finalizar_registro?token={token}">aquí</a></p>
 
-    <p>O copia este enlace: {self.url or "http://localhost:5000/"}finalizar_registro?token={token}</p>"""
+    <p>O copia este enlace: {self.url if self.url else "http://localhost:5000"}/finalizar_registro?token={token}</p>"""
         message.attach(MIMEText(body, "html"))
 
         _ = self.client.connect(self.host, self.port)
